@@ -1,0 +1,1143 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Profile - NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f7f8fc;
+                color: #17172b;
+                min-height: 100vh;
+            }
+            button, input, textarea, select {
+                font-family: inherit;
+            }
+            button {
+                cursor: pointer;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: #ffffff;
+                border-right: 1px solid #e7e6ef;
+                display: flex;
+                flex-direction: column;
+                z-index: 1000;
+            }
+            .logo {
+                padding: 24px 22px;
+                font-size: 23px;
+                font-weight: 800;
+                color: #6c4df6;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .logo span {
+                color: #17172b;
+            }
+            .nav {
+                padding: 20px 14px;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .nav-title {
+                font-size: 11px;
+                color: #9a99a8;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 8px 10px 12px;
+            }
+            .nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 13px;
+                margin-bottom: 5px;
+                border-radius: 10px;
+                color: #68677a;
+                font-size: 14px;
+                font-weight: 600;
+                transition: 0.25s;
+            }
+            .nav a:hover {
+                background: #f2f0ff;
+                color: #6c4df6;
+            }
+            .nav a.active {
+                background: #f0edff;
+                color: #6c4df6;
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 17px;
+            }
+            .upgrade-card {
+                margin: 15px;
+                padding: 17px;
+                border-radius: 14px;
+                background: #17172b;
+                color: white;
+            }
+            .upgrade-card h4 {
+                font-size: 14px;
+                margin-bottom: 7px;
+            }
+            .upgrade-card p {
+                font-size: 12px;
+                line-height: 1.5;
+                color: #c7c6d4;
+                margin-bottom: 13px;
+            }
+            .upgrade-card a {
+                display: block;
+                text-align: center;
+                background: #6c4df6;
+                padding: 9px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 74px;
+                background: white;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: #f2f0ff;
+                color: #6c4df6;
+                width: 40px;
+                height: 40px;
+                border-radius: 9px;
+                font-size: 20px;
+            }
+            .page-title h2 {
+                font-size: 19px;
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: #8a8999;
+                font-size: 12px;
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .credits {
+                background: #f0edff;
+                color: #6c4df6;
+                padding: 8px 13px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .theme-btn {
+                width: 39px;
+                height: 39px;
+                border: 1px solid #e5e4ec;
+                background: white;
+                border-radius: 9px;
+                font-size: 17px;
+            }
+            .avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #6c4df6;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .content {
+                padding: 30px;
+                max-width: 1400px;
+                margin: auto;
+            }
+            .profile-layout {
+                display: grid;
+                grid-template-columns: 300px 1fr;
+                gap: 22px;
+                align-items: start;
+            }
+            .card {
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+            }
+            .profile-card {
+                padding: 25px 20px;
+                text-align: center;
+            }
+            .profile-avatar-wrapper {
+                position: relative;
+                width: 94px;
+                height: 94px;
+                margin: 0 auto 16px;
+            }
+            .profile-avatar {
+                width: 94px;
+                height: 94px;
+                border-radius: 50%;
+                background: #6c4df6;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 29px;
+                font-weight: 800;
+                border: 5px solid #f0edff;
+            }
+            .camera-btn {
+                position: absolute;
+                right: 0;
+                bottom: 1px;
+                width: 30px;
+                height: 30px;
+                border: 3px solid white;
+                background: #6c4df6;
+                color: white;
+                border-radius: 50%;
+                font-size: 12px;
+            }
+            .profile-card h2 {
+                font-size: 19px;
+                margin-bottom: 5px;
+            }
+            .profile-email {
+                color: #8e8d9c;
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+            .plan-badge {
+                display: inline-block;
+                background: #f0edff;
+                color: #6c4df6;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 10px;
+                font-weight: 700;
+                margin-bottom: 20px;
+            }
+            .profile-divider {
+                border: none;
+                border-top: 1px solid #eeeef4;
+                margin: 5px 0 18px;
+            }
+            .profile-info {
+                text-align: left;
+            }
+            .profile-info-row {
+                display: flex;
+                justify-content: space-between;
+                gap: 15px;
+                margin-bottom: 13px;
+            }
+            .profile-info-row span:first-child {
+                color: #9998a7;
+                font-size: 11px;
+            }
+            .profile-info-row span:last-child {
+                color: #444357;
+                font-size: 11px;
+                font-weight: 600;
+                text-align: right;
+            }
+            .edit-profile-btn {
+                width: 100%;
+                border: none;
+                background: #6c4df6;
+                color: white;
+                padding: 11px;
+                border-radius: 9px;
+                font-size: 12px;
+                font-weight: 700;
+                margin-top: 7px;
+            }
+            .edit-profile-btn:hover {
+                background: #5940d8;
+            }
+            .right-content {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            .section-card {
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .section-header {
+                padding: 18px 21px;
+                border-bottom: 1px solid #e9e8ef;
+            }
+            .section-header h3 {
+                font-size: 15px;
+                margin-bottom: 4px;
+            }
+            .section-header p {
+                color: #9291a0;
+                font-size: 11px;
+            }
+            .section-body {
+                padding: 21px;
+            }
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 17px;
+            }
+            .field {
+                margin-bottom: 2px;
+            }
+            .field.full {
+                grid-column: 1 / -1;
+            }
+            .field label {
+                display: block;
+                color: #555465;
+                font-size: 11px;
+                font-weight: 700;
+                margin-bottom: 7px;
+            }
+            .field input, .field textarea, .field select {
+                width: 100%;
+                padding: 11px 12px;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #29283d;
+                border-radius: 9px;
+                outline: none;
+                font-size: 12px;
+            }
+            .field textarea {
+                min-height: 90px;
+                resize: vertical;
+                line-height: 1.6;
+            }
+            .field input:focus, .field textarea:focus, .field select:focus {
+                border-color: #6c4df6;
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            .form-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 9px;
+                margin-top: 18px;
+            }
+            .btn {
+                padding: 10px 16px;
+                border-radius: 9px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            .cancel-btn {
+                background: white;
+                color: #69687a;
+                border: 1px solid #dedde7;
+            }
+            .save-btn {
+                background: #6c4df6;
+                color: white;
+                border: 1px solid #6c4df6;
+            }
+            .save-btn:hover {
+                background: #5940d8;
+            }
+            .account-stats {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 13px;
+            }
+            .account-stat {
+                background: #fafafe;
+                border: 1px solid #eeeef4;
+                border-radius: 11px;
+                padding: 16px;
+            }
+            .account-stat .icon {
+                width: 35px;
+                height: 35px;
+                background: #f0edff;
+                color: #6c4df6;
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 11px;
+            }
+            .account-stat span {
+                display: block;
+                color: #9291a0;
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+            .account-stat strong {
+                font-size: 18px;
+            }
+            .plan-box {
+                background: #17172b;
+                border-radius: 13px;
+                padding: 20px;
+                color: white;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+            }
+            .plan-info {
+                display: flex;
+                gap: 14px;
+                align-items: center;
+            }
+            .plan-icon {
+                width: 45px;
+                height: 45px;
+                background: #6c4df6;
+                border-radius: 11px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+            }
+            .plan-info h3 {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+            .plan-info p {
+                color: #aaa9b9;
+                font-size: 10px;
+            }
+            .upgrade-btn {
+                background: #6c4df6;
+                border: none;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 8px;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            .upgrade-btn:hover {
+                background: #8067f8;
+            }
+            .security-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 0;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .security-row:last-child {
+                border-bottom: none;
+            }
+            .security-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .security-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 9px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .security-left h4 {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+            .security-left p {
+                color: #9291a0;
+                font-size: 10px;
+            }
+            .security-btn {
+                border: 1px solid #dedde7;
+                background: white;
+                color: #68677a;
+                padding: 8px 11px;
+                border-radius: 8px;
+                font-size: 10px;
+                font-weight: 600;
+            }
+            .security-btn:hover {
+                color: #6c4df6;
+                border-color: #6c4df6;
+            }
+            .activity {
+                display: flex;
+                flex-direction: column;
+            }
+            .activity-item {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 13px 0;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+            .activity-icon {
+                width: 36px;
+                height: 36px;
+                flex-shrink: 0;
+                border-radius: 9px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .activity-info {
+                flex: 1;
+            }
+            .activity-info h4 {
+                font-size: 11px;
+                margin-bottom: 4px;
+            }
+            .activity-info p {
+                color: #9291a0;
+                font-size: 10px;
+            }
+            .activity-time {
+                color: #aaa9b6;
+                font-size: 9px;
+            }
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(20, 19, 35, 0.55);
+                z-index: 2000;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .modal-overlay.show {
+                display: flex;
+            }
+            .modal {
+                width: 100%;
+                max-width: 430px;
+                background: white;
+                border-radius: 15px;
+                overflow: hidden;
+            }
+            .modal-header {
+                padding: 18px;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-header h3 {
+                font-size: 15px;
+            }
+            .close-modal {
+                width: 30px;
+                height: 30px;
+                border: none;
+                background: #f1f0f6;
+                border-radius: 8px;
+                font-size: 17px;
+            }
+            .modal-body {
+                padding: 20px;
+            }
+            .modal-body p {
+                color: #777687;
+                font-size: 12px;
+                line-height: 1.7;
+                margin-bottom: 18px;
+            }
+            .modal-input {
+                width: 100%;
+                padding: 11px;
+                border: 1px solid #dedde7;
+                border-radius: 9px;
+                outline: none;
+                margin-bottom: 12px;
+                font-size: 12px;
+            }
+            .modal-input:focus {
+                border-color: #6c4df6;
+            }
+            .toast {
+                position: fixed;
+                right: 25px;
+                bottom: 25px;
+                background: #17172b;
+                color: white;
+                padding: 12px 17px;
+                border-radius: 9px;
+                font-size: 12px;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: 0.3s;
+                z-index: 3000;
+            }
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            body.dark {
+                background: #10101c;
+                color: #f3f2fa;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .card, body.dark .section-card, body.dark .modal {
+                background: #181827;
+                border-color: #29293b;
+            }
+            body.dark .logo span, body.dark .page-title h2, body.dark .profile-card h2, body.dark .section-header h3, body.dark .account-stat strong, body.dark .security-left h4, body.dark .activity-info h4, body.dark .modal-header h3 {
+                color: #f3f2fa;
+            }
+            body.dark .nav a {
+                color: #aaa9b9;
+            }
+            body.dark .nav a:hover, body.dark .nav a.active {
+                background: #25243b;
+                color: #a99cff;
+            }
+            body.dark .topbar {
+                border-color: #29293b;
+            }
+            body.dark .theme-btn, body.dark .cancel-btn, body.dark .security-btn, body.dark .modal-input {
+                background: #202033;
+                color: #e7e6ef;
+                border-color: #353549;
+            }
+            body.dark .field input, body.dark .field textarea, body.dark .field select {
+                background: #202033;
+                color: #e7e6ef;
+                border-color: #353549;
+            }
+            body.dark .account-stat {
+                background: #202033;
+                border-color: #303047;
+            }
+            body.dark .security-row, body.dark .activity-item, body.dark .section-header, body.dark .profile-divider {
+                border-color: #303047;
+            }
+            body.dark .close-modal {
+                background: #29293b;
+                color: #dddce7;
+            }
+            body.dark .modal-body p {
+                color: #bcbacb;
+            }
+            body.dark .profile-avatar {
+                border-color: #29243f;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1100px) {
+                .profile-layout {
+                    grid-template-columns: 260px 1fr;
+                }
+                .account-stats {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            @media (max-width: 850px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: 0.3s;
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 900;
+                }
+                .profile-layout {
+                    grid-template-columns: 1fr;
+                }
+                .profile-card {
+                    max-width: 600px;
+                    margin: auto;
+                    width: 100%;
+                }
+            }
+            @media (max-width: 600px) {
+                .content {
+                    padding: 18px 14px;
+                }
+                .topbar {
+                    padding: 0 15px;
+                }
+                .page-title p, .credits, .avatar {
+                    display: none;
+                }
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+                .field.full {
+                    grid-column: auto;
+                }
+                .account-stats {
+                    grid-template-columns: 1fr;
+                }
+                .plan-box {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                .upgrade-btn {
+                    width: 100%;
+                }
+                .security-row {
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                Nova<span>AI</span>
+            </div>
+            <nav class="nav">
+                <div class="nav-title">Workspace</div>
+                <a href="dashboard.html">
+                    <span class="nav-icon">⌂</span>Dashboard
+                </a>
+                <a href="chat.html">
+                    <span class="nav-icon">✦</span>AI Chat
+                </a>
+                <a href="image-generator.html">
+                    <span class="nav-icon">▧</span>Image Generator
+                </a>
+                <a href="code-generator.html">
+                    <span class="nav-icon">&lt;/&gt;</span>Code Generator
+                </a>
+                <a href="text-summarizer.html">
+                    <span class="nav-icon">≡</span>Text Summarizer
+                </a>
+                <a href="email-generator.html">
+                    <span class="nav-icon">✉</span>Email Generator
+                </a>
+                <a href="blog-generator.html">
+                    <span class="nav-icon">▤</span>Blog Generator
+                </a>
+                <div class="nav-title">Manage</div>
+                <a href="history.html">
+                    <span class="nav-icon">◷</span>History
+                </a>
+                <a href="profile.html" class="active">
+                    <span class="nav-icon">◎</span>Profile
+                </a>
+                <a href="settings.html">
+                    <span class="nav-icon">⚙</span>Settings
+                </a>
+                <a href="pricing.html">
+                    <span class="nav-icon">◆</span>Pricing
+                </a>
+            </nav>
+            <div class="upgrade-card">
+                <h4>Upgrade to Premium</h4>
+                <p>Get more AI generations, longer articles and advanced tools.</p>
+                <a href="pricing.html">View Plans</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="menuBtn">☰</button>
+                    <div class="page-title">
+                        <h2>Profile</h2>
+                        <p>Manage your NovaAI account</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="credits">⚡ 42 Credits</div>
+                    <button class="theme-btn" id="themeBtn">☾</button>
+                    <div class="avatar">JD</div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="profile-layout">
+                    <div class="card profile-card">
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar" id="profileAvatar">JD</div>
+                            <button class="camera-btn" id="cameraBtn" title="Change profile picture">📷</button>
+                        </div>
+                        <h2 id="profileName">John Doe</h2>
+                        <p class="profile-email" id="profileEmail">john.doe@example.com</p>
+                        <span class="plan-badge">FREE PLAN</span>
+                        <hr class="profile-divider">
+                        <div class="profile-info">
+                            <div class="profile-info-row">
+                                <span>Member since</span>
+                                <span>January 2026</span>
+                            </div>
+                            <div class="profile-info-row">
+                                <span>Account type</span>
+                                <span>Individual</span>
+                            </div>
+                            <div class="profile-info-row">
+                                <span>Country</span>
+                                <span id="profileCountry">India</span>
+                            </div>
+                            <div class="profile-info-row">
+                                <span>Language</span>
+                                <span>English</span>
+                            </div>
+                        </div>
+                        <button class="edit-profile-btn" id="editBtn">Edit Profile</button>
+                    </div>
+                    <div class="right-content">
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3>Personal Information</h3>
+                                <p>Update your personal details and profile information.</p>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-grid">
+                                    <div class="field">
+                                        <label>First Name</label>
+                                        <input type="text" id="firstName" value="John" disabled>
+                                    </div>
+                                    <div class="field">
+                                        <label>Last Name</label>
+                                        <input type="text" id="lastName" value="Doe" disabled>
+                                    </div>
+                                    <div class="field">
+                                        <label>Email Address</label>
+                                        <input type="email" id="email" value="john.doe@example.com" disabled>
+                                    </div>
+                                    <div class="field">
+                                        <label>Phone Number</label>
+                                        <input type="tel" id="phone" value="+91 98765 43210" disabled>
+                                    </div>
+                                    <div class="field">
+                                        <label>Country</label>
+                                        <select id="country" disabled>
+                                            <option selected>India</option>
+                                            <option>United States</option>
+                                            <option>United Kingdom</option>
+                                            <option>Canada</option>
+                                            <option>Australia</option>
+                                        </select>
+                                    </div>
+                                    <div class="field">
+                                        <label>Time Zone</label>
+                                        <select id="timezone" disabled>
+                                            <option selected>India Standard Time (IST)</option>
+                                            <option>UTC</option>
+                                            <option>Eastern Time</option>
+                                            <option>Pacific Time</option>
+                                        </select>
+                                    </div>
+                                    <div class="field full">
+                                        <label>About</label>
+                                        <textarea id="about" disabled>AI enthusiast and technology learner exploring artificial intelligence, web development and modern digital tools.</textarea>
+                                    </div>
+                                </div>
+                                <div class="form-actions" id="formActions" style="display:none;">
+                                    <button class="btn cancel-btn" id="cancelBtn">Cancel</button>
+                                    <button class="btn save-btn" id="saveBtn">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3>Account Statistics</h3>
+                                <p>Your NovaAI usage overview.</p>
+                            </div>
+                            <div class="section-body">
+                                <div class="account-stats">
+                                    <div class="account-stat">
+                                        <div class="icon">✦</div>
+                                        <span>AI Generations</span>
+                                        <strong>24</strong>
+                                    </div>
+                                    <div class="account-stat">
+                                        <div class="icon"> ◷</div>
+                                        <span>History Items</span>
+                                        <strong>12</strong>
+                                    </div>
+                                    <div class="account-stat">
+                                        <div class="icon">⚡</div>
+                                        <span>Credits Remaining</span>
+                                        <strong>42</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3>Current Plan</h3>
+                                <p>Manage your subscription and AI usage.</p>
+                            </div>
+                            <div class="section-body">
+                                <div class="plan-box">
+                                    <div class="plan-info">
+                                        <div class="plan-icon">◆</div>
+                                        <div>
+                                            <h3>Free Plan</h3>
+                                            <p>50 AI credits • Basic AI tools • Standard support</p>
+                                        </div>
+                                    </div>
+                                    <button class="upgrade-btn" onclick="window.location.href='pricing.html'">Upgrade Plan</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3>Security</h3>
+                                <p>Manage your password and account security.</p>
+                            </div>
+                            <div class="section-body">
+                                <div class="security-row">
+                                    <div class="security-left">
+                                        <div class="security-icon">🔒</div>
+                                        <div>
+                                            <h4>Password</h4>
+                                            <p>Last changed 30 days ago</p>
+                                        </div>
+                                    </div>
+                                    <button class="security-btn" id="changePassword">Change</button>
+                                </div>
+                                <div class="security-row">
+                                    <div class="security-left">
+                                        <div class="security-icon">✓</div>
+                                        <div>
+                                            <h4>Two-Factor Authentication</h4>
+                                            <p>Add an extra layer of protection</p>
+                                        </div>
+                                    </div>
+                                    <button class="security-btn" id="twoFactor">Enable</button>
+                                </div>
+                                <div class="security-row">
+                                    <div class="security-left">
+                                        <div class="security-icon">◉</div>
+                                        <div>
+                                            <h4>Login Sessions</h4>
+                                            <p>1 active session</p>
+                                        </div>
+                                    </div>
+                                    <button class="security-btn" id="sessionsBtn">Manage</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <h3>Recent Activity</h3>
+                                <p>Your latest activity on NovaAI.</p>
+                            </div>
+                            <div class="section-body">
+                                <div class="activity">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">▤</div>
+                                        <div class="activity-info">
+                                            <h4>Generated a blog</h4>
+                                            <p>Benefits of Web Development</p>
+                                        </div>
+                                        <div class="activity-time">Today</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">&lt;/&gt;</div>
+                                        <div class="activity-info">
+                                            <h4>Generated code</h4>
+                                            <p>Responsive navigation bar</p>
+                                        </div>
+                                        <div class="activity-time">Today</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">✉</div>
+                                        <div class="activity-info">
+                                            <h4>Created an email</h4>
+                                            <p>Internship follow-up email</p>
+                                        </div>
+                                        <div class="activity-time">Yesterday</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">✦</div>
+                                        <div class="activity-info">
+                                            <h4>Used AI Chat</h4>
+                                            <p>Java programming concepts</p>
+                                        </div>
+                                        <div class="activity-time">Sep 16</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <div class="modal-overlay" id="passwordModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Change Password</h3>
+                    <button class="close-modal" id="closePassword"> ×</button>
+                </div>
+                <div class="modal-body">
+                    <p>Enter a new password for your NovaAI account.</p>
+                    <input type="password" class="modal-input" placeholder="Current password">
+                    <input type="password" class="modal-input" placeholder="New password">
+                    <input type="password" class="modal-input" placeholder="Confirm new password">
+                    <button class="save-btn btn" id="updatePassword" style="width:100%;">Update Password</button>
+                </div>
+            </div>
+        </div>
+        <div class="toast" id="toast">Changes saved successfully!</div>
+        <script>
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const menuBtn = document.getElementById("menuBtn");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const themeBtn = document.getElementById("themeBtn");
+            if (localStorage.getItem("novaTheme") === "dark") {
+                document.body.classList.add("dark");
+                themeBtn.textContent = "☀";
+            }
+            themeBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark");
+                if (document.body.classList.contains("dark")) {
+                    localStorage.setItem( "novaTheme", "dark");
+                    themeBtn.textContent = "☀";
+                } else {
+                    localStorage.setItem( "novaTheme", "light");
+                    themeBtn.textContent = "☾";
+                }
+            });
+            const editBtn = document.getElementById("editBtn");
+            const formActions = document.getElementById("formActions");
+            const editableFields = document.querySelectorAll("#firstName, #lastName, #email, #phone, #country, #timezone, #about");
+            editBtn.addEventListener("click", () => {
+                editableFields.forEach(field => {
+                    field.disabled = false;
+                });
+                formActions.style.display = "flex";
+                editBtn.style.display = "none";
+            });
+            const cancelBtn = document.getElementById("cancelBtn");
+            cancelBtn.addEventListener("click", () => {
+                editableFields.forEach(field => {
+                    field.disabled = true;
+                });
+                formActions.style.display = "none";
+                editBtn.style.display = "block";
+            });
+            const toast = document.getElementById("toast");
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 1800);
+            }
+            const saveBtn = document.getElementById("saveBtn");
+            saveBtn.addEventListener("click", () => {
+                const firstName = document.getElementById("firstName").value.trim();
+                const lastName = document.getElementById("lastName").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const country = document.getElementById("country").value;
+                const fullName = `${firstName} ${lastName}`.trim();
+                document.getElementById("profileName").textContent = fullName;
+                document.getElementById("profileEmail").textContent = email;
+                document.getElementById("profileCountry").textContent = country;
+                const initials = `${firstName.charAt(0)}${lastName.charAt(0)}` .toUpperCase();
+                document.getElementById("profileAvatar").textContent = initials;
+                document.querySelector(".avatar").textContent = initials;
+                editableFields.forEach(field => {
+                    field.disabled = true;
+                });
+                formActions.style.display = "none";
+                editBtn.style.display = "block";
+                showToast("Profile updated successfully!");
+            });
+            document.getElementById("cameraBtn").addEventListener("click", () => {
+                showToast("Profile photo upload is available in the full version.");
+            });
+            const passwordModal = document.getElementById("passwordModal");
+            const changePassword = document.getElementById("changePassword");
+            const closePassword = document.getElementById("closePassword");
+            changePassword.addEventListener("click", () => {
+                    passwordModal.classList.add("show");
+                }
+            );
+            closePassword.addEventListener("click", () => {
+                    passwordModal.classList.remove("show");
+                }
+            );
+            passwordModal.addEventListener("click", event => {
+                    if (event.target === passwordModal) {
+                        passwordModal.classList.remove("show");
+                    }
+                }
+            );
+            document.getElementById("updatePassword").addEventListener("click", () => {
+                    passwordModal.classList.remove("show");
+                    showToast("Password updated successfully!");
+                }
+            );
+            document.getElementById("twoFactor") .addEventListener("click", () => {
+                    showToast("Two-factor authentication setup opened.");
+                }
+            );
+            document.getElementById("sessionsBtn").addEventListener("click", () => {
+                    showToast("Session management opened.");
+                }
+            );
+        </script>
+    </body>
+</html>

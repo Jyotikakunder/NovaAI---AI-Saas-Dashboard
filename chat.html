@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI Chat | NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            :root {
+                --primary: #6c4df6;
+                --primary-light: #f0edff;
+                --dark: #17172b;
+                --text: #29283d;
+                --muted: #858497;
+                --bg: #f7f8fc;
+                --white: #ffffff;
+                --border: #e7e6ef;
+                --success: #20a464;
+                --danger: #e55353;
+            }
+            body.dark {
+                --dark: #ffffff;
+                --text: #eeeeF5;
+                --muted: #a4a3b4;
+                --bg: #11111d;
+                --white: #191927;
+                --border: #2d2d40;
+                --primary-light: #25203e;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+                transition: 0.3s;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            button,input,textarea,select {
+                font-family: inherit;
+            }
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 250px;
+                height: 100vh;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 25px 15px;
+                z-index: 1000;
+            }
+            .logo {
+                display: block;
+                padding: 0 15px;
+                font-size: 25px;
+                font-weight: 800;
+                color: var(--primary);
+                margin-bottom: 40px;
+            }
+            .logo span {
+                color: var(--text);
+            }
+            .menu-title {
+                color: var(--muted);
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                padding: 0 15px;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+            }
+            .nav-menu {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 12px 15px;
+                border-radius: 9px;
+                color: var(--muted);
+                font-size: 13px;
+                font-weight: 600;
+                transition: 0.3s;
+            }
+            .nav-link:hover, .nav-link.active {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 16px;
+            }
+            .sidebar-bottom {
+                position: absolute;
+                bottom: 20px;
+                left: 15px;
+                right: 15px;
+            }
+            .upgrade-card {
+                background: linear-gradient(135deg, #6c4df6, #8a73ff);
+                border-radius: 13px;
+                padding: 16px;
+                color: white;
+                margin-bottom: 12px;
+            }
+            .upgrade-card h4 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            .upgrade-card p {
+                color: #e7e2ff;
+                font-size: 10px;
+                line-height: 1.5;
+                margin-bottom: 11px;
+            }
+            .upgrade-btn {
+                display: block;
+                background: white;
+                color: var(--primary);
+                text-align: center;
+                padding: 8px;
+                border-radius: 7px;
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .logout {
+                color: var(--danger);
+            }
+            .main {
+                margin-left: 250px;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .topbar {
+                height: 72px;
+                flex-shrink: 0;
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: none;
+                color: var(--text);
+                font-size: 22px;
+                cursor: pointer;
+            }
+            .page-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .page-title-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .page-title h1 {
+                font-size: 17px;
+                color: var(--text);
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .model-select {
+                height: 36px;
+                padding: 0 12px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                color: var(--text);
+                border-radius: 8px;
+                font-size: 11px;
+                outline: none;
+            }
+            .theme-btn {
+                width: 36px;
+                height: 36px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                color: var(--text);
+                border-radius: 8px;
+                cursor: pointer;
+            }
+            .chat-wrapper {
+                flex: 1;
+                min-height: 0;
+                display: flex;
+            }
+            .conversations {
+                width: 255px;
+                flex-shrink: 0;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 18px 14px;
+                overflow-y: auto;
+            }
+            .new-chat {
+                width: 100%;
+                height: 42px;
+                border: none;
+                background: var(--primary);
+                color: white;
+                border-radius: 9px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                margin-bottom: 25px;
+                transition: 0.3s;
+            }
+            .new-chat:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(108, 77, 246, 0.2);
+            }
+            .conversation-title {
+                font-size: 10px;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                font-weight: 700;
+                padding: 0 8px;
+                margin-bottom: 9px;
+            }
+            .conversation {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 11px 9px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-bottom: 4px;
+                transition: 0.3s;
+            }
+            .conversation:hover, .conversation.active {
+                background: var(--primary-light);
+            }
+            .conversation-icon {
+                width: 30px;
+                height: 30px;
+                border-radius: 7px;
+                background: var(--bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                flex-shrink: 0;
+            }
+            .conversation.active .conversation-icon {
+                background: var(--primary);
+                color: white;
+            }
+            .conversation-info {
+                min-width: 0;
+            }
+            .conversation-info strong {
+                display: block;
+                color: var(--text);
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .conversation-info span {
+                display: block;
+                color: var(--muted);
+                font-size: 9px;
+                margin-top: 3px;
+            }
+            .chat-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                background: var(--bg);
+            }
+            .messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 30px 8%;
+            }
+            .welcome-chat {
+                max-width: 700px;
+                margin: 40px auto 30px;
+                text-align: center;
+            }
+            .welcome-icon {
+                width: 58px;
+                height: 58px;
+                margin: 0 auto 18px;
+                border-radius: 16px;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 26px;
+            }
+            .welcome-chat h2 {
+                font-size: 25px;
+                color: var(--text);
+                margin-bottom: 9px;
+            }
+            .welcome-chat h2 span {
+                color: var(--primary);
+            }
+            .welcome-chat p {
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.7;
+            }
+            .suggestions {
+                max-width: 700px;
+                margin: 0 auto 30px;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .suggestion {
+                padding: 14px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                border-radius: 10px;
+                text-align: left;
+                cursor: pointer;
+                transition: 0.3s;
+                color: var(--text);
+            }
+            .suggestion:hover {
+                border-color: var(--primary);
+                transform: translateY(-2px);
+            }
+            .suggestion strong {
+                display: block;
+                font-size: 11px;
+                margin-bottom: 5px;
+            }
+            .suggestion span {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .message {
+                max-width: 760px;
+                margin: 0 auto 25px;
+                display: flex;
+                gap: 12px;
+            }
+            .message-avatar {
+                width: 34px;
+                height: 34px;
+                flex-shrink: 0;
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .message.user .message-avatar {
+                background: var(--primary);
+                color: white;
+            }
+            .message.ai .message-avatar {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .message-content {
+                flex: 1;
+            }
+            .message-name {
+                font-size: 10px;
+                color: var(--muted);
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+            .message-text {
+                color: var(--text);
+                font-size: 12px;
+                line-height: 1.7;
+            }
+            .message-actions {
+                display: flex;
+                gap: 7px;
+                margin-top: 8px;
+            }
+            .message-actions button {
+                border: none;
+                background: transparent;
+                color: var(--muted);
+                font-size: 10px;
+                cursor: pointer;
+            }
+            .message-actions button:hover {
+                color: var(--primary);
+            }
+            .input-area {
+                padding: 15px 8% 20px;
+                background: var(--bg);
+            }
+            .input-container {
+                max-width: 760px;
+                margin: auto;
+            }
+            .input-box {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 13px;
+                padding: 12px;
+                box-shadow: 0 8px 25px rgba(30, 25, 70, 0.06);
+            }
+            .input-box:focus-within {
+                border-color: #b9adff;
+                box-shadow: 0 8px 25px rgba(108, 77, 246, 0.08);
+            }
+            textarea {
+                width: 100%;
+                min-height: 50px;
+                max-height: 130px;
+                resize: none;
+                border: none;
+                outline: none;
+                background: transparent;
+                color: var(--text);
+                font-size: 12px;
+                line-height: 1.6;
+                padding: 4px;
+            }
+            textarea::placeholder {
+                color: #aaa9b6;
+            }
+            .input-bottom {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 8px;
+            }
+            .input-tools {
+                display: flex;
+                gap: 5px;
+            }
+            .input-tool {
+                width: 30px;
+                height: 30px;
+                border: none;
+                background: var(--bg);
+                color: var(--muted);
+                border-radius: 7px;
+                cursor: pointer;
+            }
+            .input-tool:hover {
+                color: var(--primary);
+            }
+            .send-btn {
+                width: 36px;
+                height: 36px;
+                border: none;
+                background: var(--primary);
+                color: white;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: 0.3s;
+            }
+            .send-btn:hover {
+                transform: translateY(-2px);
+            }
+            .input-note {
+                text-align: center;
+                color: var(--muted);
+                font-size: 9px;
+                margin-top: 9px;
+            }
+            .clear-btn {
+                border: none;
+                background: transparent;
+                color: var(--muted);
+                font-size: 10px;
+                cursor: pointer;
+            }
+            .clear-btn:hover {
+                color: var(--danger);
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1000px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: 0.3s;
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,0.4);
+                    z-index: 999;
+                }
+            }
+            @media (max-width: 750px) {
+                .conversations {
+                    display: none;
+                }
+                .topbar {
+                    padding: 0 15px;
+                }
+                .page-title h1 {
+                    font-size: 15px;
+                }
+                .model-select {
+                    display: none;
+                }
+                .messages {
+                    padding: 25px 20px;
+                }
+                .input-area {
+                    padding: 12px 15px 18px;
+                }
+            }
+            @media (max-width: 500px) {
+                .welcome-chat {
+                    margin-top: 20px;
+                }
+                .welcome-chat h2 {
+                    font-size: 21px;
+                }
+                .suggestions {
+                    grid-template-columns: 1fr;
+                }
+                .message {
+                    gap: 9px;
+                }
+                .message-avatar {
+                    width: 30px;
+                    height: 30px;
+                }
+                .top-actions {
+                    gap: 5px;
+                }
+                .theme-btn {
+                    width: 33px;
+                    height: 33px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="logo">Nova<span>AI</span></a>
+            <div class="menu-title">Main Menu</div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">▦</span>
+                    Dashboard
+                </a>
+                <a href="chat.html" class="nav-link active">
+                    <span class="nav-icon">💬</span>
+                    AI Chat
+                </a>
+                <a href="image-generator.html" class="nav-link">
+                    <span class="nav-icon">🖼</span>
+                    Image Generator
+                </a>
+                <a href="code-generator.html" class="nav-link">
+                    <span class="nav-icon">{"}"}</span>
+                    Code Generator
+                </a>
+                <a href="text-summarizer.html" class="nav-link">
+                    <span class="nav-icon">📝</span>
+                    Text Summarizer
+                </a>
+                <a href="email-generator.html" class="nav-link">
+                    <span class="nav-icon">✉</span>
+                    Email Generator
+                </a>
+                <a href="blog-generator.html" class="nav-link">
+                    <span class="nav-icon">✍</span>
+                    Blog Generator
+                </a>
+                <a href="history.html" class="nav-link">
+                    <span class="nav-icon">↶</span>
+                    History
+                </a>
+                <div class="menu-title" style="margin-top:25px;">
+                    Account
+                </div>
+                <a href="profile.html" class="nav-link">
+                    <span class="nav-icon">👤</span>
+                    Profile
+                </a>
+                <a href="settings.html" class="nav-link">
+                    <span class="nav-icon">⚙</span>
+                    Settings
+                </a>
+                <a href="pricing.html" class="nav-link">
+                    <span class="nav-icon">♜</span>
+                    Pricing
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="upgrade-card">
+                    <h4>Upgrade to Premium</h4>
+                    <p>Unlock unlimited AI generations and advanced features.</p>
+                    <a href="pricing.html" class="upgrade-btn">Upgrade Now</a>
+                </div>
+                <a href="login.html" class="nav-link logout">
+                    <span class="nav-icon">↪</span>
+                    Logout
+                </a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu" onclick="openSidebar()">☰</button>
+                    <div class="page-title">
+                        <div class="page-title-icon">💬</div>
+                        <div>
+                            <h1>AI Chat Assistant</h1>
+                            <p>Ask anything and get intelligent answers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <select class="model-select">
+                        <option>NovaAI Smart</option>
+                        <option>NovaAI Fast</option>
+                        <option>NovaAI Creative</option>
+                    </select>
+                    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+                </div>
+            </header>
+            <div class="chat-wrapper">
+                <aside class="conversations">
+                    <button class="new-chat" onclick="newChat()">+ New Conversation</button>
+                    <div class="conversation-title">Today</div>
+                    <div class="conversation active">
+                        <div class="conversation-icon">💬</div>
+                        <div class="conversation-info">
+                            <strong>Java Programming Help</strong>
+                            <span>10 min ago</span>
+                        </div>
+                    </div>
+                    <div class="conversation">
+                        <div class="conversation-icon">💡</div>
+                        <div class="conversation-info">
+                            <strong>Project Ideas</strong>
+                            <span>1 hour ago</span>
+                        </div>
+                    </div>
+                    <div class="conversation">
+                        <div class="conversation-icon">📚</div>
+                        <div class="conversation-info">
+                            <strong>Data Science Notes</strong>
+                            <span>3 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="conversation-title" style="margin-top:25px;">Yesterday</div>
+                    <div class="conversation">
+                        <div class="conversation-icon">💻</div>
+                        <div class="conversation-info">
+                            <strong>Python Functions</strong>
+                            <span>Yesterday</span>
+                        </div>
+                    </div>
+                    <div class="conversation">
+                        <div class="conversation-icon">✉</div>
+                        <div class="conversation-info">
+                            <strong>Internship Email</strong>
+                            <span>Yesterday</span>
+                        </div>
+                    </div>
+                    <div class="conversation">
+                        <div class="conversation-icon">🌐</div>
+                        <div class="conversation-info">
+                            <strong>Web Development</strong>
+                            <span>Yesterday</span>
+                        </div>        
+                    </div>        
+                </aside>
+                <section class="chat-container">
+                    <div class="messages" id="messages"></div>
+                        <div class="welcome-chat"  id="welcome"></div> 
+                        <div class="welcome-icon">✨</div>
+                            <h2>How can I help you <span>today?</span></h2>
+                            <p>Ask questions, learn something new, generate ideas or get help with your work.</p>
+                        </div>
+                        <div class="suggestions" id="suggestions">
+                            <button class="suggestion" onclick="useSuggestion('Explain Java OOP concepts in simple words')">
+                                <strong>💻 Explain Java OOP</strong>
+                                <span> Learn programming concepts simply</span>
+                            </button>
+                            <button class="suggestion" onclick="useSuggestion('Give me some creative project ideas for a BCA student')">
+                                <strong> 💡 Give me project ideas </strong>
+                                <span>Find ideas for your next project</span>
+                            </button>
+                                <strong>📚 Create a study plan</strong>
+                                <span>Build a personalized learning plan</span>
+                            </button>
+                            <button class="suggestion" onclick="useSuggestion('Write a professional internship email')">
+                                <strong>✉ Write an email</strong>
+                                <span>Create a professional message</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-area">
+                        <div class="input-container">
+                            <div class="input-box">
+                                <textarea id="prompt" placeholder="Message NovaAI..." rows="2" onkeydown="handleKey(event)"></textarea>
+                                <div class="input-bottom">
+                                    <div class="input-tools">
+                                        <button class="input-tool" title="Attach file">📎</button>
+                                        <button class="input-tool" title="Add image">🖼</button>
+                                        <button class="input-tool" title="Voice input">🎙</button>
+                                    </div>
+                                    <button class="send-btn" onclick="sendMessage()" title="Send">↑</button>
+                                </div>
+                            </div>
+                            <div class="input-note">NovaAI can make mistakes. Check important information.</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <script>
+            function openSidebar() {
+                document
+                    .getElementById("sidebar")
+                    .classList
+                    .add("open");
+                document
+                    .getElementById("overlay")
+                    .classList
+                    .add("show");
+
+            }
+            function closeSidebar() {
+                document
+                    .getElementById("sidebar")
+                    .classList
+                    .remove("open");
+                document
+                    .getElementById("overlay")
+                    .classList
+                    .remove("show");
+
+            }
+            function toggleTheme() {
+                document.body.classList.toggle("dark");
+                const button = document.getElementById("themeBtn");
+                if (document.body.classList.contains("dark")) {
+                    button.innerHTML = "☀️";
+                    localStorage.setItem("novaTheme", "dark");
+                } else {
+                    button.innerHTML = "🌙";
+                    localStorage.setItem("novaTheme", "light");
+                }
+            }
+            window.addEventListener(
+                "DOMContentLoaded",
+                function () {
+                    if (localStorage.getItem("novaTheme") === "dark") {
+                        document.body.classList.add("dark");
+                        document.getElementById("themeBtn").innerHTML = "☀️";
+                    }
+                }
+            );
+            function useSuggestion(text) {
+                document.getElementById("prompt").value = text;
+                document.getElementById("prompt").focus();
+            }
+            function sendMessage() {
+                const prompt = document.getElementById("prompt");
+                const text = prompt.value.trim();
+                if (!text) {
+                    return;
+                }
+                const messages = document.getElementById("messages");
+                const welcome = document.getElementById("welcome");
+                const suggestions = document.getElementById("suggestions");
+                if (welcome) {
+                    welcome.style.display = "none";
+                }
+                if (suggestions) {
+                    suggestions.style.display = "none";
+                }
+                const userMessage = document.createElement("div");
+                userMessage.className = "message user";
+                userMessage.innerHTML = `
+                    <div class="message-avatar">JS</div>
+                    <div class="message-content">
+                        <div class="message-name">You</div>
+                        <div class="message-text">${escapeHTML(text)}</div>
+                    </div>
+                `;
+                messages.appendChild(userMessage);
+                prompt.value = "";
+                messages.scrollTop = messages.scrollHeight;
+                const loading = document.createElement("div");
+                loading.className = "message ai";
+                loading.id = "loadingMessage";
+                loading.innerHTML = `
+                    <div class="message-avatar">✨</div>
+                    <div class="message-content">
+                        <div class="message-name">NovaAI</div>
+                        <div class="message-text">Thinking...</div>
+                    </div>
+                `;
+                messages.appendChild(loading);
+                messages.scrollTop = messages.scrollHeight;
+                setTimeout(function () {
+                    loading.remove();
+                    const aiMessage = document.createElement("div");
+                    aiMessage.className = "message ai";
+                    aiMessage.innerHTML = `
+                        <div class="message-avatar">✨</div>
+                        <div class="message-content">
+                            <div class="message-name">NovaAI</div>
+                            <div class="message-text">That's a great question! I'm currently running in demo mode. Once an AI API is connected, NovaAI will generate a personalized response to your prompt.</div>
+                            <div class="message-actions">
+                                <button onclick="copyText(this)">📋 Copy</button>
+                                <button>👍</button>
+                                <button>👎</button>
+                            </div>
+                        </div>
+                    `;
+                    messages.appendChild(aiMessage);
+                    messages.scrollTop =messages.scrollHeight;
+                }, 900);
+            }
+            function handleKey(event) {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            }
+            function copyText(button) {
+                const text = button .closest(".message-content") .querySelector(".message-text") .innerText;
+                navigator.clipboard.writeText(text);
+                const original = button.innerHTML;
+                button.innerHTML = "✓ Copied";
+                setTimeout(function () {
+                    button.innerHTML =original;
+                }, 1500);
+            }
+            function newChat() {
+                const messages = document.getElementById("messages");
+                messages.innerHTML = `
+                    <div class="welcome-chat" id="welcome">
+                        <div class="welcome-icon">✨</div>
+                        <h2>How can I help you <span>today?</span></h2>
+                        <p>Ask questions, learn something new, generate ideas or get help with your work.</p>
+                    </div>
+                    <div class="suggestions" id="suggestions">
+                        <button class="suggestion" onclick="useSuggestion('Explain Java OOP concepts in simple words')">
+                            <strong>💻 Explain Java OOP</strong>
+                            <span>Learn programming concepts simply</span>
+                        </button>
+                        <button class="suggestion" onclick="useSuggestion('Give me some creative project ideas for a BCA student')">
+                            <strong>💡 Give me project ideas</strong>
+                            <span>Find ideas for your next project</span>
+                        </button>
+                        <button class="suggestion" onclick="useSuggestion('Create a study plan for learning web development')">
+                            <strong>📚 Create a study plan</strong>
+                            <span>Build a personalized learning plan</span>
+                        </button>
+                        <button class="suggestion" onclick="useSuggestion('Write a professional internship email')">
+                            <strong>✉ Write an email</strong>
+                            <span>Create a professional message</span>
+                        </button>
+                    </div>
+                `;
+            }
+            function escapeHTML(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        </script>
+    </body>
+</html>

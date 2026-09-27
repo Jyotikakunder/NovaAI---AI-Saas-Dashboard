@@ -1,0 +1,942 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Pricing | NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            :root {
+                --primary: #6c4df6;
+                --primary-light: #f0edff;
+                --dark: #17172b;
+                --text: #29283d;
+                --muted: #858497;
+                --bg: #f7f8fc;
+                --white: #ffffff;
+                --border: #e7e6ef;
+                --success: #22a06b;
+                --danger: #e5484d;
+                --sidebar-width: 250px;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+                transition: 0.25s;
+            }
+            button {
+                font-family: inherit;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: var(--sidebar-width);
+                height: 100vh;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 22px 15px;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+            }
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 0 10px;
+                margin-bottom: 30px;
+            }
+            .logo-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 11px;
+                background: var(--primary);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+                font-weight: bold;
+            }
+            .logo span {
+                font-size: 21px;
+                font-weight: 700;
+                color: var(--dark);
+            }
+            .menu-title {
+                font-size: 11px;
+                font-weight: 700;
+                color: #aaa8b8;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 0 12px;
+                margin: 20px 0 9px;
+            }
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 11px 12px;
+                margin-bottom: 4px;
+                color: var(--muted);
+                text-decoration: none;
+                border-radius: 9px;
+                font-size: 14px;
+                transition: 0.2s;
+            }
+            .nav-link:hover {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-link.active {
+                background: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+            .nav-icon {
+                width: 19px;
+                text-align: center;
+                font-size: 16px;
+            }
+            .sidebar-bottom {
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid var(--border);
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.35);
+                z-index: 900;
+            }
+            .main {
+                margin-left: var(--sidebar-width);
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 72px;
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 500;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .menu-btn {
+                display: none;
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                border-radius: 9px;
+                cursor: pointer;
+                font-size: 19px;
+            }
+            .page-title {
+                font-size: 21px;
+                font-weight: 700;
+                color: var(--dark);
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+            .theme-btn {
+                border: 1px solid var(--border);
+                background: var(--white);
+                width: 39px;
+                height: 39px;
+                border-radius: 9px;
+                cursor: pointer;
+                font-size: 17px;
+            }
+            .profile-mini {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                cursor: pointer;
+            }
+            .profile-avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 13px;
+            }
+            .profile-mini span {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .content {
+                padding: 35px 30px 60px;
+                max-width: 1200px;
+            }
+            .pricing-header {
+                text-align: center;
+                max-width: 650px;
+                margin: 0 auto 35px;
+            }
+            .pricing-header .badge {
+                display: inline-block;
+                background: var(--primary-light);
+                color: var(--primary);
+                padding: 7px 13px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 700;
+                margin-bottom: 13px;
+            }
+            .pricing-header h1 {
+                color: var(--dark);
+                font-size: 31px;
+                line-height: 1.25;
+                margin-bottom: 10px;
+            }
+            .pricing-header p {
+                color: var(--muted);
+                font-size: 14px;
+                line-height: 1.6;
+            }
+            .billing {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                margin-bottom: 30px;
+            }
+            .billing-label {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .billing-toggle {
+                width: 44px;
+                height: 24px;
+                background: var(--primary);
+                border: none;
+                border-radius: 20px;
+                padding: 3px;
+                cursor: pointer;
+            }
+            .billing-toggle span {
+                display: block;
+                width: 18px;
+                height: 18px;
+                background: white;
+                border-radius: 50%;
+                transform: translateX(19px);
+                transition: 0.2s;
+            }
+            .billing-toggle.yearly span {
+                transform: translateX(0);
+            }
+            .save-badge {
+                color: var(--success);
+                background: #eaf8f1;
+                padding: 5px 9px;
+                border-radius: 15px;
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .pricing-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                max-width: 1050px;
+                margin: 0 auto;
+            }
+            .pricing-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 16px;
+                padding: 26px;
+                position: relative;
+                transition: 0.25s;
+            }
+            .pricing-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(23, 23, 43, 0.08);
+            }
+            .pricing-card.popular {
+                border: 2px solid var(--primary);
+                box-shadow: 0 10px 30px rgba(108, 77, 246, 0.12);
+            }
+            .popular-label {
+                position: absolute;
+                top: -13px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--primary);
+                color: white;
+                padding: 6px 14px;
+                border-radius: 20px;
+                font-size: 10px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+            .plan-icon {
+                width: 42px;
+                height: 42px;
+                background: var(--primary-light);
+                color: var(--primary);
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+                margin-bottom: 17px;
+            }
+            .pricing-card h2 {
+                font-size: 19px;
+                color: var(--dark);
+                margin-bottom: 7px;
+            }
+            .plan-description {
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.5;
+                min-height: 36px;
+            }
+            .price {
+                margin: 22px 0;
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+            }
+            .price strong {
+                color: var(--dark);
+                font-size: 34px;
+            }
+            .price span {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .price-yearly {
+                display: none;
+            }
+            .plan-button {
+                width: 100%;
+                height: 43px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 700;
+                transition: 0.2s;
+                margin-bottom: 23px;
+            }
+            .outline-button {
+                background: var(--white);
+                color: var(--primary);
+                border: 1px solid var(--primary);
+            }
+            .outline-button:hover {
+                background: var(--primary-light);
+            }
+            .primary-button {
+                background: var(--primary);
+                color: white;
+                border: 1px solid var(--primary);
+            }
+            .primary-button:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+            .dark-button {
+                background: var(--dark);
+                color: white;
+                border: 1px solid var(--dark);
+            }
+            .dark-button:hover {
+                opacity: 0.9;
+            }
+            .features-title {
+                color: var(--dark);
+                font-size: 12px;
+                font-weight: 700;
+                margin-bottom: 14px;
+            }
+            .feature {
+                display: flex;
+                align-items: flex-start;
+                gap: 9px;
+                margin-bottom: 11px;
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.4;
+            }
+            .feature::before {
+                content: "✓";
+                color: var(--success);
+                font-weight: bold;
+                flex-shrink: 0;
+            }
+            .comparison-section {
+                max-width: 1050px;
+                margin: 65px auto 0;
+            }
+            .section-heading {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+            .section-heading h2 {
+                color: var(--dark);
+                font-size: 23px;
+                margin-bottom: 7px;
+            }
+            .section-heading p {
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .comparison-table {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                overflow: hidden;
+            }
+            .comparison-row {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                border-bottom: 1px solid var(--border);
+            }
+            .comparison-row:last-child {
+                border-bottom: none;
+            }
+            .comparison-cell {
+                padding: 15px 18px;
+                font-size: 12px;
+                color: var(--muted);
+                text-align: center;
+                border-right: 1px solid var(--border);
+            }
+            .comparison-cell:first-child {
+                text-align: left;
+                color: var(--text);
+                font-weight: 600;
+            }
+            .comparison-cell:last-child {
+                border-right: none;
+            }
+            .comparison-header {
+                background: var(--primary-light);
+                color: var(--primary);
+                font-weight: 700;
+            }
+            .check {
+                color: var(--success);
+                font-weight: bold;
+                font-size: 15px;
+            }
+            .cross {
+                color: #b4b2c0;
+            }
+            .faq-section {
+                max-width: 850px;
+                margin: 65px auto 0;
+            }
+            .faq-item {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                margin-bottom: 10px;
+                overflow: hidden;
+            }
+            .faq-question {
+                width: 100%;
+                border: none;
+                background: transparent;
+                padding: 17px 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: var(--dark);
+                font-weight: 600;
+                font-size: 13px;
+                cursor: pointer;
+                text-align: left;
+            }
+            .faq-icon {
+                color: var(--primary);
+                font-size: 18px;
+            }
+            .faq-answer {
+                display: none;
+                padding: 0 18px 17px;
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.6;
+            }
+            .faq-item.open .faq-answer {
+                display: block;
+            }
+            .cta {
+                max-width: 1050px;
+                margin: 65px auto 0;
+                background: var(--dark);
+                border-radius: 18px;
+                padding: 38px;
+                text-align: center;
+                color: white;
+            }
+            .cta h2 {
+                font-size: 24px;
+                margin-bottom: 9px;
+            }
+            .cta p {
+                color: #aaa9ba;
+                font-size: 12px;
+                margin-bottom: 20px;
+            }
+            .cta button {
+                background: var(--primary);
+                border: none;
+                color: white;
+                padding: 11px 20px;
+                border-radius: 8px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .toast {
+                position: fixed;
+                right: 25px;
+                bottom: 25px;
+                background: var(--dark);
+                color: white;
+                padding: 13px 18px;
+                border-radius: 9px;
+                font-size: 12px;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: 0.3s;
+                z-index: 2000;
+            }
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            body.dark {
+                --bg: #10101d;
+                --white: #19192b;
+                --dark: #ffffff;
+                --text: #eeeeF7;
+                --muted: #a5a4b5;
+                --border: #2c2c42;
+                --primary-light: #29244b;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .pricing-card, body.dark .comparison-table, body.dark .faq-item {
+                background: #19192b;
+            }
+            body.dark .outline-button {
+                background: #19192b;
+            }
+            body.dark .save-badge {
+                background: #17372b;
+            }
+            body.dark .cta {
+                background: #0d0d18;
+            }
+            @media (max-width: 1000px) {
+                .pricing-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .pricing-card:last-child {
+                    grid-column: span 2;
+                    max-width: 500px;
+                    width: 100%;
+                    margin: auto;
+                }
+            }
+            @media (max-width: 768px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .overlay.show {
+                    display: block;
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .menu-btn {
+                    display: block;
+                }
+                .topbar {
+                    padding: 0 18px;
+                }
+                .profile-mini span {
+                    display: none;
+                }
+                .content {
+                    padding: 28px 17px 50px;
+                }
+                .pricing-header h1 {
+                    font-size: 26px;
+                }
+                .pricing-grid {
+                    grid-template-columns: 1fr;
+                }
+                .pricing-card:last-child {
+                    grid-column: auto;
+                    max-width: none;
+                }
+                .comparison-section {
+                    overflow-x: auto;
+                }
+                .comparison-table {
+                    min-width: 650px;
+                }
+            }
+            @media (max-width: 500px) {
+                .topbar-right {
+                    gap: 8px;
+                }
+                .pricing-card {
+                    padding: 22px;
+                }
+                .cta {
+                    padding: 30px 20px;
+                }
+                .billing {
+                    flex-wrap: wrap;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">✦</div>
+                <span>NovaAI</span>
+            </div>
+            <div class="menu-title">Workspace</div>
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">▦</span>Dashboard
+            </a>
+            <div class="menu-title">AI Tools</div>
+            <a href="chat.html" class="nav-link">
+                <span class="nav-icon">◌</span>AI Chat
+            </a>
+            <a href="image-generator.html" class="nav-link">
+                <span class="nav-icon">▧</span>Image Generator
+            </a>
+            <a href="code-generator.html" class="nav-link">
+                <span class="nav-icon">&lt;/&gt;</span>Code Generator
+            </a>
+            <a href="text-summarizer.html" class="nav-link">
+                <span class="nav-icon">≡</span>Text Summarizer
+            </a>
+            <a href="email-generator.html" class="nav-link">
+                <span class="nav-icon">✉</span>Email Generator
+            </a>
+            <a href="blog-generator.html" class="nav-link">
+                <span class="nav-icon">✎</span>Blog Generator
+            </a>
+            <div class="menu-title">Manage</div>
+            <a href="history.html" class="nav-link">
+                <span class="nav-icon">◷</span>History
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="nav-icon">◯</span>Profile
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="nav-icon">⚙</span>Settings
+            </a>
+            <a href="pricing.html" class="nav-link active">
+                <span class="nav-icon">◇</span>Pricing
+            </a>
+            <div class="sidebar-bottom">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">←</span>Back to Website
+                </a>
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">↪</span>Logout
+                </a>
+            </div>
+        </aside>
+        <div class="overlay" id="overlay"></div>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" id="menuBtn">☰</button>
+                    <div class="page-title">Pricing</div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" id="themeBtn" title="Toggle theme">☾</button>
+                    <div class="profile-mini" onclick="location.href='profile.html'">
+                        <div class="profile-avatar">JD</div>
+                        <span>John Doe</span>
+                    </div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="pricing-header">
+                    <div class="badge">SIMPLE & TRANSPARENT</div>
+                    <h1>Choose the plan that works for you</h1>
+                    <p>Start for free and upgrade when you need more AI power. No complicated plans. Just the tools you need.</p>
+                </div>
+                <div class="billing">
+                    <span class="billing-label">Monthly</span>
+                    <button class="billing-toggle" id="billingToggle">
+                        <span></span>
+                    </button>
+                    <span class="billing-label">Yearly</span>
+                    <span class="save-badge">SAVE 20%</span>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="plan-icon">♧</div>
+                        <h2>Free</h2>
+                        <p class="plan-description">Perfect for trying out NovaAI and basic AI tasks.</p>
+                        <div class="price">
+                            <strong>₹0</strong>
+                            <span> / month</span>
+                        </div>
+                        <button class="plan-button outline-button" onclick="choosePlan('Free')">Current Plan</button>
+                        <div class="features-title">What's included:</div>
+                        <div class="feature">50 AI generations / month</div>
+                        <div class="feature">AI Chat</div>
+                        <div class="feature">Text Summarizer</div>
+                        <div class="feature">Email Generator</div>
+                        <div class="feature">Basic code generation</div>
+                        <div class="feature">Generation history</div>
+                        <div class="feature">Standard support</div>
+                    </div>
+                    <div class="pricing-card popular">
+                        <div class="popular-label">MOST POPULAR</div>
+                        <div class="plan-icon">◆</div>
+                        <h2>Basic</h2>
+                        <p class="plan-description">For students, creators and professionals who need more.</p>
+                        <div class="price">
+                            <strong class="monthly-price">₹499</strong>
+                            <strong class="price-yearly yearly-price">₹399</strong>
+                            <span> / month</span>
+                        </div>
+                        <button class="plan-button primary-button" onclick="choosePlan('Basic')">Upgrade to Basic</button>
+                        <div class="features-title">Everything in Free, plus:</div>
+                        <div class="feature">500 AI generations / month</div>
+                        <div class="feature">Advanced AI Chat</div>
+                        <div class="feature">AI Image Generator</div>
+                        <div class="feature">Advanced Code Generator</div>
+                        <div class="feature">Blog Generator</div>
+                        <div class="feature">Priority generation</div>
+                        <div class="feature">No usage ads</div>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="plan-icon">✦</div>
+                        <h2>Premium</h2>
+                        <p class="plan-description">Maximum AI power for teams and heavy users.</p>
+                        <div class="price">
+                            <strong class="monthly-price">₹999</strong>
+                            <strong class="price-yearly yearly-price">₹799</strong>
+                            <span> / month</span>
+                        </div>
+                        <button class="plan-button dark-button" onclick="choosePlan('Premium')">Get Premium</button>
+                        <div class="features-title">Everything in Basic, plus:</div>
+                        <div class="feature">Unlimited AI generations*</div>
+                        <div class="feature">Premium AI models</div>
+                        <div class="feature">High-quality image generation</div>
+                        <div class="feature">Faster generation</div>
+                        <div class="feature">Advanced history management</div>
+                        <div class="feature">Priority support</div>
+                        <div class="feature">Early access to new tools</div>
+                    </div>
+                </div>
+                <div class="comparison-section">
+                    <div class="section-heading">
+                        <h2>Compare Plans</h2>
+                        <p>See what each NovaAI plan includes.</p>
+                    </div>
+                    <div class="comparison-table">
+                        <div class="comparison-row">
+                            <div class="comparison-cell comparison-header">Feature</div>
+                            <div class="comparison-cell comparison-header">Free</div>
+                            <div class="comparison-cell comparison-header">Basic</div>
+                            <div class="comparison-cell comparison-header">Premium</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">AI Chat</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check"> ✓</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Image Generator</div>
+                            <div class="comparison-cell cross">—</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Code Generator</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Blog Generator</div>
+                            <div class="comparison-cell cross">—</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Monthly Generations</div>
+                            <div class="comparison-cell">50</div>
+                            <div class="comparison-cell">500</div>
+                            <div class="comparison-cell">Unlimited*</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Priority Support</div>
+                            <div class="comparison-cell cross">—</div>
+                            <div class="comparison-cell check">✓</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div class="comparison-cell">Early Feature Access</div>
+                            <div class="comparison-cell cross">—</div>
+                            <div class="comparison-cell cross">—</div>
+                            <div class="comparison-cell check">✓</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-section">
+                    <div class="section-heading">
+                        <h2>Frequently Asked Questions</h2>
+                        <p>Everything you need to know about NovaAI pricing.</p>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">Can I use NovaAI for free?
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">Yes. The Free plan lets you explore NovaAI with limited monthly AI generations and access to essential AI tools.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">Can I upgrade my plan later?
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">Yes. You can upgrade your plan whenever you need additional AI generations and advanced features.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">Is there a yearly billing option?
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">Yes. The yearly option is displayed with a discounted monthly equivalent.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">Can I cancel my subscription?
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">In the full product, subscription management would be available from your account settings. This internship version contains the frontend UI only.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question" onclick="toggleFaq(this)">Is the payment system connected?
+                            <span class="faq-icon">+</span>
+                        </button>
+                        <div class="faq-answer">No. The Buy and Upgrade buttons in this project are demonstration UI elements and do not process real payments.</div>
+                    </div>
+                </div>
+                <div class="cta">
+                    <h2>Ready to unlock more AI power?</h2>
+                    <p>Choose a plan and explore everything NovaAI has to offer.</p>
+                    <button onclick="choosePlan('Basic')">Get Started</button>
+                </div>
+            </section>
+        </main>
+        <div class="toast" id="toast">Plan selected.</div>
+        <script>
+            const menuBtn = document.getElementById("menuBtn");
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const themeBtn = document.getElementById("themeBtn");
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    document.body.classList.add("dark");
+                    themeBtn.textContent = "☀";
+                } else {
+                    document.body.classList.remove("dark");
+                    themeBtn.textContent = "☾";
+                }
+                localStorage.setItem("novaTheme", theme);
+            }
+            const savedTheme = localStorage.getItem("novaTheme");
+            if (savedTheme === "dark") {
+                applyTheme("dark");
+            }
+            themeBtn.addEventListener("click", () => {
+                const isDark = document.body.classList.contains("dark");
+                applyTheme(isDark ? "light" : "dark");
+            });
+            const billingToggle = document.getElementById("billingToggle");
+            let yearly = false;
+            billingToggle.addEventListener("click", () => {
+                yearly = !yearly;
+                billingToggle.classList.toggle("yearly", yearly);
+                document .querySelectorAll(".monthly-price") .forEach(item => {
+                        item.style.display = yearly ? "none" : "block";
+                    });
+                document .querySelectorAll(".yearly-price") .forEach(item => {
+                        item.style.display = yearly ? "block" : "none";
+                    });
+                showToast(yearly ? "Yearly billing selected" : "Monthly billing selected");
+            });
+            function choosePlan(plan) {
+                if (plan === "Free") {
+                    showToast("You are already using the Free plan.");
+                    return;
+                }
+                showToast(plan + " plan selected. Payment is demo-only.");
+            }
+            function toggleFaq(button) {
+                const item = button.parentElement;
+                const icon = button.querySelector(".faq-icon");
+                const isOpen = item.classList.contains("open");
+                document .querySelectorAll(".faq-item") .forEach(faq => {
+                        faq.classList.remove("open");
+                        const faqIcon = faq.querySelector(".faq-icon");
+                        faqIcon.textContent = "+";
+                    });
+                if (!isOpen) {
+                    item.classList.add("open");
+                    icon.textContent = "−";
+                }
+            }
+            let toastTimer;
+            function showToast(message) {
+                const toast = document.getElementById("toast");
+                toast.textContent = message;
+                toast.classList.add("show");
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                        toast.classList.remove("show");
+                    }, 2500);
+            }
+        </script>
+    </body>
+</html>

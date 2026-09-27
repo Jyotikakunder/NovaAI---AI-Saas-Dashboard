@@ -1,0 +1,899 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard | NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            :root {
+                --primary: #6c4df6;
+                --primary-light: #f0edff;
+                --dark: #17172b;
+                --text: #29283d;
+                --muted: #858497;
+                --bg: #f7f8fc;
+                --white: #ffffff;
+                --border: #e8e7ef;
+                --success: #20a464;
+                --danger: #e55353;
+                --shadow: 0 8px 30px rgba(35, 30, 80, 0.06);
+            }
+            body.dark {
+                --dark: #ffffff;
+                --text: #eeeeF5;
+                --muted: #a4a3b4;
+                --bg: #11111d;
+                --white: #191927;
+                --border: #2d2d40;
+                --primary-light: #25203e;
+                --shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                transition: 0.3s;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            button {
+                font-family: inherit;
+            }
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 250px;
+                height: 100vh;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 25px 15px;
+                z-index: 1000;
+                transition: 0.3s;
+            }
+            .logo {
+                padding: 0 15px;
+                font-size: 25px;
+                font-weight: 800;
+                color: var(--primary);
+                margin-bottom: 40px;
+            }
+            .logo span {
+                color: var(--text);
+            }
+            .menu-title {
+                color: var(--muted);
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                padding: 0 15px;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+            }
+            .nav-menu {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 12px 15px;
+                border-radius: 9px;
+                color: var(--muted);
+                font-size: 13px;
+                font-weight: 600;
+                transition: 0.3s;
+            }
+            .nav-link:hover {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-link.active {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 16px;
+            }
+            .sidebar-bottom {
+                position: absolute;
+                bottom: 25px;
+                left: 15px;
+                right: 15px;
+            }
+            .upgrade-card {
+                background: linear-gradient(135deg, #6c4df6, #8a73ff);
+                border-radius: 13px;
+                padding: 17px;
+                color: white;
+                margin-bottom: 15px;
+            }
+            .upgrade-card h4 {
+                font-size: 13px;
+                margin-bottom: 7px;
+            }
+            .upgrade-card p {
+                font-size: 10px;
+                line-height: 1.5;
+                color: #e7e2ff;
+                margin-bottom: 12px;
+            }
+            .upgrade-btn {
+                display: block;
+                background: white;
+                color: var(--primary);
+                padding: 8px;
+                border-radius: 7px;
+                text-align: center;
+                font-size: 11px;
+                font-weight: 700;
+            }
+            .logout {
+                color: var(--danger);
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 75px;
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 35px;
+            }
+            .menu-toggle {
+                display: none;
+                background: none;
+                border: none;
+                font-size: 22px;
+                color: var(--text);
+                cursor: pointer;
+            }
+            .search-box {
+                width: 280px;
+                position: relative;
+            }
+            .search-box input {
+                width: 100%;
+                height: 40px;
+                border: 1px solid var(--border);
+                background: var(--bg);
+                color: var(--text);
+                border-radius: 8px;
+                padding: 0 15px 0 40px;
+                outline: none;
+                font-size: 12px;
+            }
+
+            .search-box span {
+                position: absolute;
+                left: 14px;
+                top: 12px;
+                color: var(--muted);
+                font-size: 14px;
+            }
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+            .icon-btn {
+                width: 38px;
+                height: 38px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                border-radius: 9px;
+                cursor: pointer;
+                font-size: 16px;
+                color: var(--text);
+            }
+            .icon-btn:hover {
+                color: var(--primary);
+                border-color: var(--primary);
+            }
+            .notification {
+                position: relative;
+            }
+            .notification::after {
+                content: "";
+                position: absolute;
+                width: 6px;
+                height: 6px;
+                background: var(--danger);
+                border-radius: 50%;
+                top: 7px;
+                right: 7px;
+            }
+            .profile {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+            }
+            .avatar {
+                width: 38px;
+                height: 38px;
+                background: var(--primary);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .profile-info strong {
+                display: block;
+                font-size: 12px;
+                color: var(--text);
+            }
+            .profile-info span {
+                display: block;
+                font-size: 10px;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+            .content {
+                padding: 35px;
+                max-width: 1500px;
+                margin: auto;
+            }
+            .welcome {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+            .welcome h1 {
+                font-size: 28px;
+                color: var(--text);
+                margin-bottom: 7px;
+            }
+            .welcome h1 span {
+                color: var(--primary);
+            }
+            .welcome p {
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .date {
+                color: var(--muted);
+                font-size: 12px;
+                background: var(--white);
+                border: 1px solid var(--border);
+                padding: 10px 14px;
+                border-radius: 8px;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 18px;
+                margin-bottom: 28px;
+            }
+            .stat-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 13px;
+                padding: 20px;
+                box-shadow: var(--shadow);
+                transition: 0.3s;
+            }
+            .stat-card:hover {
+                transform: translateY(-3px);
+            }
+            .stat-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 18px;
+            }
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                font-size: 18px;
+            }
+            .stat-change {
+                font-size: 10px;
+                color: var(--success);
+                font-weight: 700;
+            }
+            .stat-card h3 {
+                font-size: 25px;
+                margin-bottom: 5px;
+                color: var(--text);
+            }
+            .stat-card p {
+                color: var(--muted);
+                font-size: 11px;
+            }
+            .dashboard-grid {
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 22px;
+                margin-bottom: 25px;
+            }
+            .card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                box-shadow: var(--shadow);
+            }
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 22px;
+                border-bottom: 1px solid var(--border);
+            }
+            .card-header h2 {
+                font-size: 15px;
+                color: var(--text);
+            }
+            .view-all {
+                color: var(--primary);
+                font-size: 11px;
+                font-weight: 700;
+            }
+            .activity {
+                padding: 8px 22px 15px;
+            }
+            .activity-item {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 15px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+            .activity-icon {
+                width: 38px;
+                height: 38px;
+                background: var(--primary-light);
+                color: var(--primary);
+                border-radius: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                flex-shrink: 0;
+            }
+            .activity-text {
+                flex: 1;
+            }
+            .activity-text strong {
+                display: block;
+                font-size: 12px;
+                color: var(--text);
+                margin-bottom: 4px;
+            }
+            .activity-text span {
+                font-size: 10px;
+                color: var(--muted);
+            }
+            .activity-time {
+                font-size: 9px;
+                color: var(--muted);
+            }
+            .usage-content {
+                padding: 22px;
+            }
+            .usage-info {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 12px;
+            }
+            .usage-info span {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .usage-info strong {
+                color: var(--text);
+                font-size: 12px;
+            }
+            .progress {
+                height: 9px;
+                background: var(--bg);
+                border-radius: 20px;
+                overflow: hidden;
+                margin-bottom: 20px;
+            }
+            .progress-bar {
+                height: 100%;
+                width: 68%;
+                background: var(--primary);
+                border-radius: 20px;
+            }
+            .usage-plan {
+                background: var(--primary-light);
+                border-radius: 10px;
+                padding: 15px;
+                margin-top: 20px;
+            }
+            .usage-plan strong {
+                display: block;
+                font-size: 12px;
+                color: var(--primary);
+                margin-bottom: 5px;
+            }
+            .usage-plan p {
+                font-size: 10px;
+                color: var(--muted);
+                line-height: 1.5;
+            }
+            .upgrade-small {
+                display: inline-block;
+                margin-top: 10px;
+                font-size: 10px;
+                color: var(--primary);
+                font-weight: 700;
+            }
+            .tools-section {
+                margin-bottom: 25px;
+            }
+            .section-heading {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 16px;
+            }
+            .section-heading h2 {
+                font-size: 17px;
+                color: var(--text);
+            }
+            .section-heading p {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 4px;
+            }
+            .tools-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 17px;
+            }
+            .tool-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 13px;
+                padding: 20px;
+                transition: 0.3s;
+                cursor: pointer;
+                box-shadow: var(--shadow);
+            }
+            .tool-card:hover {
+                transform: translateY(-4px);
+                border-color: #c9c1ff;
+            }
+            .tool-icon {
+                width: 42px;
+                height: 42px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--primary-light);
+                color: var(--primary);
+                border-radius: 10px;
+                font-size: 19px;
+                margin-bottom: 15px;
+            }
+            .tool-card h3 {
+                font-size: 13px;
+                color: var(--text);
+                margin-bottom: 7px;
+            }
+            .tool-card p {
+                font-size: 10px;
+                color: var(--muted);
+                line-height: 1.6;
+                margin-bottom: 14px;
+            }
+            .tool-link {
+                color: var(--primary);
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .quick-actions {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+            }
+            .quick-btn {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 16px;
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                cursor: pointer;
+                color: var(--text);
+                transition: 0.3s;
+                text-align: left;
+            }
+            .quick-btn:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+            }
+            .quick-btn span:first-child {
+                font-size: 18px;
+            }
+            .quick-btn span:last-child {
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1100px) {
+                .stats-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .tools-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .quick-actions {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (max-width: 850px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .menu-toggle {
+                    display: block;
+                }
+                .topbar {
+                    padding: 0 20px;
+                }
+                .search-box {
+                    display: none;
+                }
+                .overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.35);
+                    z-index: 999;
+                }
+                .overlay.show {
+                    display: block;
+                }
+                .dashboard-grid {
+                    grid-template-columns: 1fr;
+                }
+                .content {
+                    padding: 25px 20px;
+                }
+            }
+            @media (max-width: 600px) {
+                .stats-grid, .tools-grid, .quick-actions {
+                    grid-template-columns: 1fr;
+                }
+                .welcome {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                .welcome h1 {
+                    font-size: 23px;
+                }
+                .profile-info {
+                    display: none;
+                }
+                .top-actions {
+                    gap: 8px;
+                }
+                .content {
+                    padding: 22px 15px;
+                }
+                .topbar {
+                    padding: 0 15px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="logo">Nova<span>AI</span></a>
+            <div class="menu-title">Main Menu</div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link active"><span class="nav-icon">▦</span>Dashboard</a>
+                <a href="ai-chat.html" class="nav-link"><span class="nav-icon">💬</span>AI Chat</a>
+                <a href="image-generator.html" class="nav-link"><span class="nav-icon">🖼</span>Image Generator</a>
+                <a href="code-generator.html" class="nav-link"><span class="nav-icon">{"}"}</span>Code Generator</a>
+                <a href="text-summarizer.html" class="nav-link"><span class="nav-icon">📝</span>Text Summarizer<a>
+                <a href="email-generator.html" class="nav-link"><span class="nav-icon">✉</span>Email Generator</a>
+                <a href="blog-generator.html" class="nav-link"><span class="nav-icon">✍</span>Blog Generator</a>
+                <a href="history.html" class="nav-link"><span class="nav-icon">↶</span>History</a>
+                <div class="menu-title" style="margin-top:25px;">Account</div>
+                <a href="profile.html" class="nav-link"><span class="nav-icon">👤</span>Profile</a>
+                <a href="settings.html" class="nav-link"><span class="nav-icon">⚙</span>Settings </a>
+                <a href="pricing.html" class="nav-link"><span class="nav-icon">♜</span>Pricing</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="upgrade-card">
+                    <h4>Upgrade to Premium</h4>
+                    <p>Unlock unlimited AI generations, advanced tools and more.</p>
+                    <a href="pricing.html" class="upgrade-btn">Upgrade Now</a>
+                </div>
+                <a href="login.html" class="nav-link logout"><span class="nav-icon">↪</span>Logout</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:15px;">
+                    <button class="menu-toggle" onclick="openSidebar()">☰</button>
+                    <div class="search-box">
+                        <span>⌕</span>
+                        <input type="text" placeholder="Search AI tools...">
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <button class="icon-btn notification" title="Notifications">🔔</button>
+                    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle Theme"></button>🌙</button>
+                    <div class="profile">
+                        <div class="avatar">JS</div>
+                        <div class="profile-info">
+                            <strong>Jyoti Sharma</strong>
+                            <span>Free Plan</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="welcome">
+                    <div>
+                        <h1>Welcome back, <span>Jyoti!</span> 👋</h1>
+                        <p>Here's what's happening with your NovaAI workspace today.</p>
+                    </div>
+                    <div class="date">📅 September 15, 2026</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon">✨</div>
+                            <span class="stat-change">+18.5%</span>
+                        </div>
+                        <h3>128</h3>
+                        <p>Total AI Generations</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon">💬</div>
+                            <span class="stat-change">+12.2%</span>
+                        </div>
+                        <h3>64</h3>
+                        <p>AI Conversations</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon">📝</div>
+                            <span class="stat-change">+8.4%</span>
+                        </div>
+                        <h3>31</h3>
+                        <p>Documents Created</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-top">
+                            <div class="stat-icon">⚡</div>
+                            <span class="stat-change">68%</span>
+                        </div>
+                        <h3>682</h3>
+                        <p>Credits Remaining</p>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Recent Activity</h2>
+                            <a href="history.html" class="view-all">View All →</a>
+                        </div>
+                        <div class="activity">
+                            <div class="activity-item">
+                                <div class="activity-icon">💬</div>
+                                <div class="activity-text">
+                                    <strong>AI Chat Conversation</strong>
+                                    <span>Asked about Java programming concepts</span>
+                                </div>
+                                <span class="activity-time">10 min ago</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">📝</div>
+                                <div class="activity-text">
+                                    <strong>Text Summarized</strong>
+                                    <span>Summarized a 2,400 word article</span>
+                                </div>
+                                <span class="activity-time">1 hr ago</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">{"}"}</div>
+                                <div class="activity-text">
+                                    <strong>Code Generated</strong>
+                                    <span>Python expense tracker function</span>
+                                </div>
+                                <span class="activity-time">3 hrs ago</span>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">✉</div>
+                                <div class="activity-text">
+                                    <strong>Email Generated</strong>
+                                    <span>Professional internship email</span>
+                                </div>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class= "card">
+                        <div class="card-header">
+                            <h2>AI Usage</h2>
+                            <span style="font-size:10px;color:#858497;">This Month</span>
+                        </div>
+                        <div class="usage-content">
+                            <div class="usage-info">
+                                <span>Credits Used</span>
+                                <strong>318 / 1000</strong>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <div class="usage-info">
+                                <span>AI Generations</span>
+                                <strong>128</strong>
+                            </div>
+                            <div class="usage-info">
+                                <span>Chat Messages</span>
+                                <strong>246</strong>
+                            </div>
+                            <div class="usage-plan">
+                                <strong> ✨ Free Plan</strong>
+                                <p>
+                                    You're currently using the Free plan. Upgrade to unlock more AI generations and premium features.</p>
+                                <a href="pricing.html" class="upgrade-small">View Plans →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tools-section">
+                    <div class="section-heading">
+                        <div>
+                            <h2>AI Tools</h2>
+                            <p>Choose a tool and start creating.</p>
+                        </div>
+                        <a href="ai-tools.html" class="view-all">View All →</a>
+                    </div>
+                    <div class="tools-grid">
+                        <a href="ai-chat.html" class="tool-card">
+                            <div class="tool-icon">💬</div>
+                            <h3>AI Chat Assistant</h3>
+                            <p>Ask questions, brainstorm ideas and get intelligent AI-powered answers.</p>
+                            <span class="tool-link">Start Chat →</span>
+                        </a>
+                        <a href="image-generator.html" class="tool-card">
+                            <div class="tool-icon">🖼</div>
+                            <h3>AI Image Generator</h3>
+                            <p>Turn your ideas and text prompts into creative visual concepts.</p>
+                            <span class="tool-link">Generate Image →</span>
+                        </a>
+                        <a href="code-generator.html" class="tool-card">
+                            <div class="tool-icon">{"}"}</div>
+                            <h3>AI Code Generator</h3>
+                            <p>Generate code snippets, functions and solutions using natural language.</p>
+                            <span class="tool-link">Generate Code →</span>
+                        </a>
+                        <a href="text-summarizer.html" class="tool-card">
+                            <div class="tool-icon">📝</div>
+                            <h3>Text Summarizer</h3>
+                            <p>Convert long articles and documents into short, easy-to-read summaries.</p>
+                            <span class="tool-link">Summarize Text →</span>
+                        </a>
+                        <a href="email-generator.html" class="tool-card">
+                            <div class="tool-icon">✉</div>
+                            <h3>AI Email Generator</h3>
+                            <p>Create professional emails for work, college, internships and business.</p>
+                            <span class="tool-link">Generate Email →</span>
+                        </a>
+                        <a href="blog-generator.html" class="tool-card">
+                            <div class="tool-icon"> ✍</div>
+                            <h3>AI Blog Generator</h3>
+                            <p>Create engaging blog content from a simple topic or idea.</p>
+                            <span class="tool-link">Create Blog →</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-heading">
+                        <div>
+                            <h2>Quick Actions</h2>
+                            <p>Frequently used options.</p>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="history.html" class="quick-btn">
+                            <span>↶</span>
+                            <span>View History</span>
+                        </a>
+                        <a href="profile.html" class="quick-btn">
+                            <span>👤</span>
+                            <span>Edit Profile</span>
+                        </a>
+                        <a href="settings.html" class="quick-btn">
+                            <span>⚙</span>
+                            <span>Account Settings</span>
+                        </a>
+                        <a href="pricing.html" class="quick-btn">
+                            <span>⚡</span>
+                            <span>Upgrade Plan</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            function openSidebar() {
+                document
+                    .getElementById("sidebar")
+                    .classList
+                    .add("open");
+                document
+                    .getElementById("overlay")
+                    .classList
+                    .add("show");
+            }
+            function closeSidebar() {
+                document
+                    .getElementById("sidebar")
+                    .classList
+                    .remove("open");
+                document
+                    .getElementById("overlay")
+                    .classList
+                    .remove("show");
+
+            }
+            function toggleTheme() {
+                document.body.classList.toggle("dark");
+                const button = document.getElementById("themeBtn");
+                if (document.body.classList.contains("dark")) {
+                    button.innerHTML = "☀️";
+                    localStorage.setItem( "novaTheme", "dark");
+                } else {
+                    button.innerHTML = "🌙";
+                    localStorage.setItem( "novaTheme", "light");
+                }
+            }
+            window.addEventListener("DOMContentLoaded", function () {
+                const savedTheme = localStorage.getItem("novaTheme");
+                if (savedTheme === "dark") {
+                    document.body.classList.add("dark");
+                    document.getElementById( "themeBtn").innerHTML = "☀️";
+                }
+            });
+        </script>
+    </body>
+</html>

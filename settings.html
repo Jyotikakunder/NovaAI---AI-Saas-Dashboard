@@ -1,0 +1,1037 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Settings | NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            :root {
+                --primary: #6c4df6;
+                --primary-light: #f0edff;
+                --dark: #17172b;
+                --text: #29283d;
+                --muted: #858497;
+                --bg: #f7f8fc;
+                --white: #ffffff;
+                --border: #e7e6ef;
+                --success: #22a06b;
+                --danger: #e5484d;
+                --sidebar-width: 250px;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+            }
+            button, input, select {
+                font-family: inherit;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: var(--sidebar-width);
+                height: 100vh;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 22px 15px;
+                z-index: 1000;
+                transition: transform 0.3s ease;
+                overflow-y: auto;
+            }
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 0 10px;
+                margin-bottom: 30px;
+            }
+            .logo-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 11px;
+                background: var(--primary);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 19px;
+                font-weight: bold;
+            }
+            .logo span {
+                font-size: 21px;
+                font-weight: 700;
+                color: var(--dark);
+            }
+            .menu-title {
+                font-size: 11px;
+                font-weight: 700;
+                color: #aaa8b8;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                padding: 0 12px;
+                margin: 20px 0 9px;
+            }
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 11px 12px;
+                margin-bottom: 4px;
+                color: var(--muted);
+                text-decoration: none;
+                border-radius: 9px;
+                font-size: 14px;
+                transition: 0.2s;
+            }
+            .nav-link:hover {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-link.active {
+                background: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+            .nav-icon {
+                width: 19px;
+                text-align: center;
+                font-size: 16px;
+            }
+            .sidebar-bottom {
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid var(--border);
+            }
+            .overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.35);
+                z-index: 900;
+            }
+            .main {
+                margin-left: var(--sidebar-width);
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 72px;
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 500;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .menu-btn {
+                display: none;
+                width: 40px;
+                height: 40px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                border-radius: 9px;
+                cursor: pointer;
+                font-size: 19px;
+            }
+            .page-title {
+                font-size: 21px;
+                font-weight: 700;
+                color: var(--dark);
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+            }
+            .theme-btn {
+                border: 1px solid var(--border);
+                background: var(--white);
+                width: 39px;
+                height: 39px;
+                border-radius: 9px;
+                cursor: pointer;
+                font-size: 17px;
+            }
+            .profile-mini {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                cursor: pointer;
+            }
+            .profile-avatar {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 13px;
+            }
+            .profile-mini span {
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .content {
+                padding: 30px;
+                max-width: 1050px;
+            }
+            .intro {
+                margin-bottom: 28px;
+            }
+            .intro h1 {
+                font-size: 28px;
+                color: var(--dark);
+                margin-bottom: 7px;
+            }
+            .intro p {
+                color: var(--muted);
+                font-size: 14px;
+            }
+            .settings-layout {
+                display: grid;
+                grid-template-columns: 205px 1fr;
+                gap: 25px;
+                align-items: start;
+            }
+            .settings-nav {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 10px;
+                position: sticky;
+                top: 100px;
+            }
+            .settings-nav button {
+                width: 100%;
+                text-align: left;
+                border: none;
+                background: transparent;
+                padding: 11px 12px;
+                border-radius: 8px;
+                color: var(--muted);
+                cursor: pointer;
+                font-size: 13px;
+                margin-bottom: 3px;
+            }
+            .settings-nav button:hover, .settings-nav button.active {
+                background: var(--primary-light);
+                color: var(--primary);
+                font-weight: 600;
+            }
+            .settings-section {
+                display: none;
+            }
+            .settings-section.active {
+                display: block;
+                animation: fadeIn 0.25s ease;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(5px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .settings-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                margin-bottom: 20px;
+                overflow: hidden;
+            }
+            .card-header {
+                padding: 20px 22px;
+                border-bottom: 1px solid var(--border);
+            }
+            .card-header h2 {
+                font-size: 16px;
+                color: var(--dark);
+                margin-bottom: 5px;
+            }
+            .card-header p {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .card-body {
+                padding: 22px;
+            }
+            .form-group {
+                margin-bottom: 20px;
+            }
+            .form-group:last-child {
+                margin-bottom: 0;
+            }
+            .form-label {
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--text);
+                margin-bottom: 8px;
+            }
+            .form-input, .form-select {
+                width: 100%;
+                height: 43px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 0 13px;
+                background: var(--white);
+                color: var(--text);
+                outline: none;
+                font-size: 13px;
+                transition: 0.2s;
+            }
+            .form-input:focus, .form-select:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            .form-help {
+                color: var(--muted);
+                font-size: 11px;
+                margin-top: 6px;
+            }
+            .theme-options {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+            .theme-option {
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 15px;
+                cursor: pointer;
+                text-align: center;
+                transition: 0.2s;
+            }
+            .theme-option:hover, .theme-option.selected {
+                border-color: var(--primary);
+                background: var(--primary-light);
+            }
+            .theme-preview {
+                height: 55px;
+                border-radius: 7px;
+                margin-bottom: 10px;
+                display: flex;
+                overflow: hidden;
+                border: 1px solid var(--border);
+            }
+            .preview-sidebar {
+                width: 28%;
+                background: #ecebf2;
+            }
+            .preview-content {
+                flex: 1;
+                background: #ffffff;
+            }
+            .dark-preview .preview-sidebar {
+                background: #29283d;
+            }
+            .dark-preview .preview-content {
+                background: #17172b;
+            }
+            .system-preview .preview-sidebar {
+                background: linear-gradient(to right, #ecebf2 50%, #29283d 50%);
+            }
+            .system-preview .preview-content {
+                background: linear-gradient(to right, #ffffff 50%, #17172b 50%);
+            }
+            .theme-option span {
+                font-size: 12px;
+                font-weight: 600;
+            }
+            .setting-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 17px 0;
+                border-bottom: 1px solid var(--border);
+            }
+            .setting-row:first-child {
+                padding-top: 0;
+            }
+            .setting-row:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+            .setting-info h3 {
+                font-size: 13px;
+                color: var(--text);
+                margin-bottom: 4px;
+            }
+            .setting-info p {
+                color: var(--muted);
+                font-size: 11px;
+                line-height: 1.5;
+            }
+            .toggle {
+                width: 43px;
+                height: 24px;
+                border-radius: 20px;
+                background: #d5d4df;
+                border: none;
+                cursor: pointer;
+                padding: 3px;
+                flex-shrink: 0;
+                transition: 0.2s;
+            }
+            .toggle span {
+                display: block;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background: white;
+                transition: 0.2s;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            }
+            .toggle.active {
+                background: var(--primary);
+            }
+            .toggle.active span {
+                transform: translateX(19px);
+            }
+            .btn {
+                border: none;
+                border-radius: 8px;
+                padding: 10px 16px;
+                cursor: pointer;
+                font-size: 12px;
+                font-weight: 600;
+                transition: 0.2s;
+            }
+            .btn-primary {
+                background: var(--primary);
+                color: white;
+            }
+            .btn-primary:hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
+            .btn-outline {
+                background: var(--white);
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+            .btn-outline:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+            }
+            .btn-danger {
+                background: #fff1f1;
+                color: var(--danger);
+                border: 1px solid #ffd6d6;
+            }
+            .btn-danger:hover {
+                background: #ffe4e4;
+            }
+            .button-row {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .plan-box {
+                border: 1px solid #ddd8ff;
+                background: var(--primary-light);
+                border-radius: 11px;
+                padding: 18px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 15px;
+            }
+            .plan-name {
+                color: var(--primary);
+                font-weight: 700;
+                font-size: 15px;
+                margin-bottom: 5px;
+            }
+            .plan-box p {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .danger-card {
+                border-color: #ffd6d6;
+            }
+            .danger-card .card-header {
+                background: #fff8f8;
+            }
+            .danger-title {
+                color: var(--danger) !important;
+            }
+            .toast {
+                position: fixed;
+                right: 25px;
+                bottom: 25px;
+                background: var(--dark);
+                color: white;
+                padding: 13px 18px;
+                border-radius: 9px;
+                font-size: 12px;
+                transform: translateY(100px);
+                opacity: 0;
+                transition: 0.3s;
+                z-index: 2000;
+            }
+            .toast.show {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            body.dark {
+                --bg: #10101d;
+                --white: #19192b;
+                --dark: #ffffff;
+                --text: #eeeeF7;
+                --muted: #a5a4b5;
+                --border: #2c2c42;
+                --primary-light: #29244b;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .settings-card, body.dark .settings-nav, body.dark .theme-btn, body.dark .menu-btn, body.dark .form-input, body.dark .form-select, body.dark .btn-outline {
+                background: #19192b;
+            }
+            body.dark .form-input, body.dark .form-select {
+                color: white;
+            }
+            body.dark .btn-danger {
+                background: #351d21;
+                border-color: #573034;
+            }
+            body.dark .danger-card .card-header {
+                background: #24191c;
+            }
+            @media (max-width: 900px) {
+                .settings-layout {
+                    grid-template-columns: 1fr;
+                }
+                .settings-nav {
+                    position: static;
+                    display: flex;
+                    gap: 5px;
+                    overflow-x: auto;
+                    padding: 8px;
+                }
+                .settings-nav button {
+                    white-space: nowrap;
+                    width: auto;
+                }
+            }
+            @media (max-width: 768px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .overlay.show {
+                    display: block;
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .menu-btn {
+                    display: block;
+                }
+                .topbar {
+                    padding: 0 18px;
+                }
+                .profile-mini span {
+                    display: none;
+                }
+                .content {
+                    padding: 22px 17px;
+                }
+                .intro h1 {
+                    font-size: 24px;
+                }
+            }
+            @media (max-width: 600px) {
+                .theme-options {
+                    grid-template-columns: 1fr;
+                }
+                .theme-preview {
+                    height: 70px;
+                }
+                .plan-box {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+                .button-row {
+                    flex-wrap: wrap;
+                }
+                .topbar-right {
+                    gap: 8px;
+                }
+                .settings-nav {
+                    scrollbar-width: none;
+                }
+                .settings-nav::-webkit-scrollbar {
+                    display: none;
+                }
+                .setting-row {
+                    align-items: flex-start;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">✦</div>
+                <span>NovaAI</span>
+            </div>
+            <div class="menu-title">Workspace</div>
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">▦</span>Dashboard
+            </a>
+            <div class="menu-title">AI Tools</div>
+            <a href="chat.html" class="nav-link">
+                <span class="nav-icon">◌</span>AI Chat
+            </a>
+            <a href="image-generator.html" class="nav-link">
+                <span class="nav-icon">▧</span>Image Generator
+            </a>
+            <a href="code-generator.html" class="nav-link">
+                <span class="nav-icon">&lt;/&gt;</span>Code Generator
+            </a>
+            <a href="text-summarizer.html" class="nav-link">
+                <span class="nav-icon">≡</span>Text Summarizer
+            </a>
+            <a href="email-generator.html" class="nav-link">
+                <span class="nav-icon">✉</span>Email Generator
+            </a>
+            <a href="blog-generator.html" class="nav-link">
+                <span class="nav-icon">✎</span>Blog Generator
+            </a>
+            <div class="menu-title">Manage</div>
+            <a href="history.html" class="nav-link">
+                <span class="nav-icon">◷</span>History
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="nav-icon">◯</span>Profile
+            </a>
+            <a href="settings.html" class="nav-link active">
+                <span class="nav-icon">⚙</span>Settings
+            </a>
+            <a href="pricing.html" class="nav-link">
+                <span class="nav-icon">◇</span>Pricing
+            </a>
+            <div class="sidebar-bottom">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">←</span>Back to Website
+                </a>
+                <a href="login.html" class="nav-link">
+                    <span class="nav-icon">↪</span>Logout
+                </a>
+            </div>
+        </aside>
+        <div class="overlay" id="overlay"></div>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" id="menuBtn">☰</button>
+                    <div class="page-title">Settings</div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" id="themeBtn" title="Toggle theme">☾</button>
+                    <div class="profile-mini" onclick="location.href='profile.html'">
+                        <div class="profile-avatar">JD</div>
+                        <span>John Doe</span>
+                    </div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="intro">
+                    <h1>Settings</h1>
+                    <p>Manage your NovaAI preferences, notifications and account settings.</p>
+                </div>
+                <div class="settings-layout">
+                    <div class="settings-nav">
+                        <button class="setting-tab active" data-target="general">⚙ General</button>
+                        <button class="setting-tab" data-target="notifications">🔔 Notifications</button>
+                        <button class="setting-tab" data-target="appearance">◐ Appearance</button>
+                        <button class="setting-tab" data-target="security">🔒 Security</button>
+                        <button class="setting-tab" data-target="account">◉ Account</button>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-section active" id="general">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>General Preferences</h2>
+                                    <p>Customize how NovaAI works for you.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Language</label>
+                                        <select class="form-select" id="language">
+                                            <option>English</option>
+                                            <option>Hindi</option>
+                                            <option>Marathi</option>
+                                            <option>Spanish</option>
+                                            <option>French</option>
+                                        </select>
+                                        <div class="form-help">
+                                            Select your preferred interface language.
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Default AI Model</label>
+                                        <select class="form-select">
+                                            <option>NovaAI Smart</option>
+                                            <option>NovaAI Pro</option>
+                                            <option>NovaAI Fast</option>
+                                        </select>
+                                        <div class="form-help">This model will be selected automatically when you use AI tools.</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Time Zone</label>
+                                        <select class="form-select">
+                                            <option>(GMT+05:30) India Standard Time</option>
+                                            <option>(GMT+00:00) UTC</option>
+                                            <option>(GMT-05:00) Eastern Time</option>
+                                            <option>(GMT+01:00) Central European Time</option>
+                                        </select>
+                                    </div>
+                                    <div class="button-row">
+                                        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                                        <button class="btn btn-outline" onclick="resetSettings()">Reset</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section" id="notifications">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Notifications</h2>
+                                    <p>Choose which notifications you want to receive.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Email Notifications</h3>
+                                            <p>Receive important updates and account notifications by email.</p>
+                                        </div>
+                                        <button class="toggle active" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>AI Generation Updates</h3>
+                                            <p>Get notified when long-running AI generations are completed.</p>
+                                        </div>
+                                        <button class="toggle active" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Product Updates</h3>
+                                            <p>Receive information about new NovaAI features and improvements.</p>
+                                        </div>
+                                        <button class="toggle" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Marketing Emails</h3>
+                                            <p>Receive special offers, promotions and recommendations.</p>
+                                        </div>
+                                        <button class="toggle" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section" id="appearance">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Appearance</h2>
+                                    <p>Choose how NovaAI looks on your device.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Theme</label>
+                                        <div class="theme-options">
+                                            <div class="theme-option selected" data-theme="light" onclick="selectTheme(this)">
+                                                <div class="theme-preview">
+                                                    <div class="preview-sidebar"></div>
+                                                    <div class="preview-content"></div>
+                                                </div>
+                                                <span>Light</span>
+                                            </div>
+                                            <div class="theme-option"
+                                                data-theme="dark"
+                                                onclick="selectTheme(this)">
+                                                <div class="theme-preview dark-preview">
+                                                    <div class="preview-sidebar"></div>
+                                                    <div class="preview-content"></div>
+                                                </div>
+                                                <span>Dark</span>
+                                            </div>
+                                            <div class="theme-option" data-theme="system" onclick="selectTheme(this)">
+                                                <div class="theme-preview system-preview">
+                                                    <div class="preview-sidebar"></div>
+                                                    <div class="preview-content"></div>
+                                                </div>
+                                                <span>System</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Compact Mode</h3>
+                                            <p>Reduce spacing throughout the dashboard to display more content.</p>
+                                        </div>
+                                        <button class="toggle" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Animations</h3>
+                                            <p>Enable smooth transitions and interface animations.</p>
+                                        </div>
+                                        <button class="toggle active" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section" id="security">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Security</h2>
+                                    <p>Manage your password and account security.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Current Password</label>
+                                        <input type="password" class="form-input" placeholder="Enter current password">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">New Password</label>
+                                        <input type="password" class="form-input" placeholder="Enter new password">
+                                        <div class="form-help">Use at least 8 characters with a combination of letters and numbers.</div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Confirm New Password</label>
+                                        <input class="form-input" placeholder="Confirm new password">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+                                </div>
+                            </div>
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Login Security</h2>
+                                    <p>Additional security options for your account.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Two-Factor Authentication</h3>
+                                            <p>Add an additional layer of security when signing in.</p>
+                                        </div>
+                                        <button class="toggle" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Login Alerts</h3>
+                                            <p>Get notified when your account is accessed from a new device.</p>
+                                        </div>
+                                        <button class="toggle active" onclick="toggleSwitch(this)">
+                                            <span></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section" id="account">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Subscription</h2>
+                                    <p>Manage your current NovaAI plan.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="plan-box">
+                                        <div>
+                                            <div class="plan-name">Free Plan</div>
+                                            <p>50 AI generations per month</p>
+                                        </div>
+                                        <button class="btn btn-primary" onclick="location.href='pricing.html'">Upgrade Plan</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h2>Account Preferences</h2>
+                                    <p>Manage your account information.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" value="john.doe@example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Account ID</label>
+                                        <input type="text" class="form-input" value="NOVA-2026-001" readonly>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                                </div>
+                            </div>
+                            <div class="settings-card danger-card">
+                                <div class="card-header">
+                                    <h2 class="danger-title">Danger Zone</h2>
+                                    <p>These actions can permanently affect your account.</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="setting-row">
+                                        <div class="setting-info">
+                                            <h3>Delete Account</h3>
+                                            <p>Permanently delete your NovaAI account and associated data.</p>
+                                        </div>
+                                        <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <div class="toast" id="toast">Settings saved successfully.</div>
+        <script>
+            const menuBtn = document.getElementById("menuBtn");
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const tabs = document.querySelectorAll(".setting-tab");
+            const sections = document.querySelectorAll(".settings-section");
+            tabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    tabs.forEach(item => item.classList.remove("active"));
+                    sections.forEach(section => section.classList.remove("active"));
+                    tab.classList.add("active");
+                    const target = document.getElementById(tab.dataset.target);
+                    if (target) {
+                        target.classList.add("active");
+                    }
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth"
+                    });
+                });
+            });
+            function toggleSwitch(button) {
+                button.classList.toggle("active");
+                showToast(button.classList.contains("active") ? "Setting enabled" : "Setting disabled");
+            }
+            const themeBtn = document.getElementById("themeBtn");
+            function applyTheme(theme) {
+                if (theme === "dark") {
+                    document.body.classList.add("dark");
+                    themeBtn.textContent = "☀";
+                } else if (theme === "system") {
+                    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                        document.body.classList.add("dark");
+                        themeBtn.textContent = "☀";
+                    } else {
+                        document.body.classList.remove("dark");
+                        themeBtn.textContent = "☾";
+                    }
+                } else {
+                    document.body.classList.remove("dark");
+                    themeBtn.textContent = "☾";
+                }
+                localStorage.setItem("novaTheme", theme);
+            }
+            function selectTheme(option) {
+                document .querySelectorAll(".theme-option") .forEach(item => {
+                        item.classList.remove("selected");
+                    });
+                option.classList.add("selected");
+                applyTheme(option.dataset.theme);
+                showToast(option.dataset.theme === "dark" ? "Dark theme enabled" : option.dataset.theme === "light" ? "Light theme enabled" : "System theme enabled");
+            }
+            themeBtn.addEventListener("click", () => {
+                const isDark = document.body.classList.contains("dark");
+                applyTheme(isDark ? "light" : "dark");
+                document .querySelectorAll(".theme-option") .forEach(item => {
+                        item.classList.remove("selected");
+                    });
+                const selectedTheme = isDark ? document.querySelector('[data-theme="light"]') : document.querySelector('[data-theme="dark"]');
+                selectedTheme.classList.add("selected");
+            });
+            const savedTheme = localStorage.getItem("novaTheme");
+            if (savedTheme) {
+                applyTheme(savedTheme);
+                const selected = document.querySelector( `[data-theme="${savedTheme}"]`);
+                if (selected) {
+                    document
+                        .querySelectorAll(".theme-option")
+                        .forEach(item => {
+                            item.classList.remove("selected");
+                        });
+                    selected.classList.add("selected");
+                }
+            }
+            function saveSettings() {
+                showToast("Settings saved successfully.");
+            }
+            function resetSettings() {
+                const confirmReset = confirm("Reset your settings to the default values?");
+                if (confirmReset) {
+                    document.getElementById("language").value = "English";
+                    showToast("Settings reset to default.");
+                }
+            }
+            function changePassword() {
+                showToast("Password update is a demo action.");
+            }
+            function deleteAccount() {
+                const confirmDelete = confirm("Are you sure you want to delete your account? This demo action cannot be undone.");
+                if (confirmDelete) {
+                    showToast("Account deletion is disabled in this demo.");
+                }
+            }
+            let toastTimer;
+            function showToast(message) {
+                const toast = document.getElementById("toast");
+                toast.textContent = message;
+                toast.classList.add("show");
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 2500);
+            }
+        </script>
+    </body>
+</html>

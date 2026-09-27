@@ -1,0 +1,900 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI Image Generator | NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            :root {
+                --primary: #6c4df6;
+                --primary-light: #f0edff;
+                --dark: #17172b;
+                --text: #29283d;
+                --muted: #858497;
+                --bg: #f7f8fc;
+                --white: #ffffff;
+                --border: #e7e6ef;
+                --success: #20a464;
+                --danger: #e55353;
+            }
+            body.dark {
+                --dark: #ffffff;
+                --text: #eeeeF5;
+                --muted: #a4a3b4;
+                --bg: #11111d;
+                --white: #191927;
+                --border: #2d2d40;
+                --primary-light: #25203e;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+                transition: 0.3s;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            button, input, textarea, select {
+                font-family: inherit;
+            }
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 250px;
+                height: 100vh;
+                background: var(--white);
+                border-right: 1px solid var(--border);
+                padding: 25px 15px;
+                z-index: 1000;
+                transition: 0.3s;
+            }
+            .logo {
+                display: block;
+                padding: 0 15px;
+                font-size: 25px;
+                font-weight: 800;
+                color: var(--primary);
+                margin-bottom: 40px;
+            }
+            .logo span {
+                color: var(--text);
+            }
+            .menu-title {
+                color: var(--muted);
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                padding: 0 15px;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+            }
+            .nav-menu {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 12px 15px;
+                border-radius: 9px;
+                color: var(--muted);
+                font-size: 13px;
+                font-weight: 600;
+                transition: 0.3s;
+            }
+            .nav-link:hover, .nav-link.active {
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 16px;
+            }
+            .sidebar-bottom {
+                position: absolute;
+                bottom: 20px;
+                left: 15px;
+                right: 15px;
+            }
+            .upgrade-card {
+                background: linear-gradient(135deg, #6c4df6, #8a73ff);
+                border-radius: 13px;
+                padding: 16px;
+                color: white;
+                margin-bottom: 12px;
+            }
+            .upgrade-card h4 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            .upgrade-card p {
+                color: #e7e2ff;
+                font-size: 10px;
+                line-height: 1.5;
+                margin-bottom: 11px;
+            }
+            .upgrade-btn {
+                display: block;
+                background: white;
+                color: var(--primary);
+                text-align: center;
+                padding: 8px;
+                border-radius: 7px;
+                font-size: 10px;
+                font-weight: 700;
+            }
+            .logout {
+                color: var(--danger);
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 72px;
+                background: var(--white);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: none;
+                color: var(--text);
+                font-size: 22px;
+                cursor: pointer;
+            }
+            .page-title {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .page-title-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .page-title h1 {
+                font-size: 17px;
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .credits {
+                padding: 8px 12px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                border-radius: 8px;
+                font-size: 10px;
+                color: var(--muted);
+            }
+            .credits strong {
+                color: var(--primary);
+            }
+            .theme-btn {
+                width: 36px;
+                height: 36px;
+                border: 1px solid var(--border);
+                background: var(--white);
+                color: var(--text);
+                border-radius: 8px;
+                cursor: pointer;
+            }
+            .content {
+                padding: 32px;
+                max-width: 1450px;
+                margin: auto;
+            }
+            .intro {
+                margin-bottom: 25px;
+            }
+            .intro h2 {
+                font-size: 25px;
+                margin-bottom: 7px;
+            }
+            .intro h2 span {
+                color: var(--primary);
+            }
+            .intro p {
+                color: var(--muted);
+                font-size: 12px;
+                line-height: 1.6;
+            }
+            .generator-grid {
+                display: grid;
+                grid-template-columns: 380px 1fr;
+                gap: 22px;
+                align-items: start;
+            }
+            .settings-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 22px;
+                box-shadow: 0 8px 25px rgba(30, 25, 70, 0.05);
+            }
+            .settings-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 22px;
+            }
+            .settings-header h3 {
+                font-size: 15px;
+            }
+            .settings-header span {
+                font-size: 18px;
+            }
+            .form-group {
+                margin-bottom: 19px;
+            }
+            .form-group label {
+                display: block;
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--text);
+                margin-bottom: 8px;
+            }
+            textarea {
+                width: 100%;
+                height: 145px;
+                resize: vertical;
+                border: 1px solid var(--border);
+                border-radius: 9px;
+                padding: 12px;
+                background: var(--bg);
+                color: var(--text);
+                outline: none;
+                font-size: 11px;
+                line-height: 1.6;
+            }
+            textarea:focus {
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            textarea::placeholder {
+                color: #aaa9b6;
+            }
+            select {
+                width: 100%;
+                height: 42px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 0 11px;
+                background: var(--bg);
+                color: var(--text);
+                outline: none;
+                font-size: 11px;
+            }
+            .options-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .style-options {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 7px;
+            }
+            .style-option {
+                border: 1px solid var(--border);
+                background: var(--bg);
+                color: var(--muted);
+                border-radius: 8px;
+                padding: 9px 5px;
+                cursor: pointer;
+                font-size: 9px;
+                transition: 0.3s;
+            }
+            .style-option:hover, .style-option.selected {
+                border-color: var(--primary);
+                background: var(--primary-light);
+                color: var(--primary);
+            }
+            .style-emoji {
+                display: block;
+                font-size: 17px;
+                margin-bottom: 5px;
+            }
+            .generate-btn {
+                width: 100%;
+                height: 47px;
+                border: none;
+                border-radius: 9px;
+                background: var(--primary);
+                color: white;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: 0.3s;
+                margin-top: 5px;
+            }
+            .generate-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(108, 77, 246, 0.25);
+            }
+            .generate-btn.loading {
+                opacity: 0.75;
+                cursor: wait;
+            }
+            .generate-note {
+                text-align: center;
+                color: var(--muted);
+                font-size: 9px;
+                margin-top: 10px;
+            }
+            .preview-area {
+                min-width: 0;
+            }
+            .preview-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 13px;
+            }
+            .preview-header h3 {
+                font-size: 15px;
+            }
+            .preview-header span {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .image-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 17px;
+            }
+            .image-card {
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 13px;
+                overflow: hidden;
+                box-shadow: 0 8px 25px rgba(30, 25, 70, 0.05);
+            }
+            .image-preview {
+                height: 270px;
+                background:linear-gradient(135deg, #ece9ff, #f7f5ff, #e9e4ff);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+            .image-preview::before {
+                content: "AI";
+                font-size: 100px;
+                font-weight: 900;
+                color: rgba(108, 77, 246, 0.07);
+                position: absolute;
+            }
+            .image-preview-content {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                color: var(--primary);
+            }
+            .image-preview-content .big-icon {
+                font-size: 55px;
+                display: block;
+                margin-bottom: 12px;
+            }
+            .image-preview-content p {
+                font-size: 10px;
+                color: #77748d;
+            }
+            .image-info {
+                padding: 14px;
+            }
+            .image-info h4 {
+                font-size: 11px;
+                margin-bottom: 5px;
+            }
+            .image-info p {
+                font-size: 9px;
+                color: var(--muted);
+                margin-bottom: 11px;
+            }
+            .image-actions {
+                display: flex;
+                gap: 7px;
+            }
+            .image-action {
+                flex: 1;
+                height: 31px;
+                border: 1px solid var(--border);
+                background: var(--bg);
+                color: var(--muted);
+                border-radius: 7px;
+                cursor: pointer;
+                font-size: 9px;
+                font-weight: 600;
+            }
+            .image-action:hover {
+                color: var(--primary);
+                border-color: var(--primary);
+            }
+            .empty-state {
+                grid-column: 1 / -1;
+                min-height: 380px;
+                background: var(--white);
+                border: 1px dashed var(--border);
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 40px;
+            }
+            .empty-icon {
+                width: 70px;
+                height: 70px;
+                border-radius: 20px;
+                background: var(--primary-light);
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 30px;
+                margin: 0 auto 17px;
+            }
+            .empty-state h3 {
+                font-size: 16px;
+                margin-bottom: 7px;
+            }
+            .empty-state p {
+                color: var(--muted);
+                font-size: 11px;
+                line-height: 1.7;
+                max-width: 350px;
+            }
+            .loading-card {
+                grid-column: 1 / -1;
+                min-height: 380px;
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .spinner {
+                width: 48px;
+                height: 48px;
+                border: 4px solid var(--primary-light);
+                border-top-color: var(--primary);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 18px;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+            .loading-card h3 {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+            .loading-card p {
+                color: var(--muted);
+                font-size: 10px;
+            }
+            .tips {
+                margin-top: 22px;
+                background: var(--white);
+                border: 1px solid var(--border);
+                border-radius: 13px;
+                padding: 20px;
+            }
+            .tips h3 {
+                font-size: 13px;
+                margin-bottom: 14px;
+            }
+            .tip-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            .tip {
+                display: flex;
+                gap: 9px;
+                align-items: flex-start;
+            }
+            .tip-icon {
+                color: var(--primary);
+                font-size: 15px;
+            }
+            .tip strong {
+                display: block;
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+            .tip p {
+                color: var(--muted);
+                font-size: 9px;
+                line-height: 1.5;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1100px) {
+                .generator-grid {
+                    grid-template-columns: 320px 1fr;
+                }
+                .image-preview {
+                    height: 230px;
+                }
+            }
+            @media (max-width: 900px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 999;
+                }
+                .generator-grid {
+                    grid-template-columns: 1fr;
+                }
+                .settings-card {
+                    max-width: none;
+                }
+            }
+            @media (max-width: 650px) {
+                .content {
+                    padding: 22px 15px;
+                }
+                .topbar {
+                    padding: 0 15px;
+                }
+                .credits {
+                    display: none;
+                }
+                .page-title h1 {
+                    font-size: 14px;
+                }
+                .page-title p {
+                    display: none;
+                }
+                .image-grid {
+                    grid-template-columns: 1fr;
+                }
+                .tip-grid {
+                    grid-template-columns: 1fr;
+                }
+                .intro h2 {
+                    font-size: 22px;
+                }
+            }
+            @media (max-width: 450px) {
+                .options-row {
+                    grid-template-columns: 1fr;
+                }
+                .style-options {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+                .page-title-icon {
+                    width: 35px;
+                    height: 35px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <a href="dashboard.html" class="logo">Nova<span>AI</span></a>
+            <div class="menu-title">Main Menu</div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-link"><span class="nav-icon">▦</span>Dashboard</a>
+                <a href="chat.html" class="nav-link"><span class="nav-icon">💬</span>AI Chat</a>
+                <a href="image-generator.html" class="nav-link active"><span class="nav-icon">🖼</span>Image Generator</a>
+                <a href="code-generator.html" class="nav-link"><span class="nav-icon">{"}"}</span>Code Generator</a>
+                <a href="text-summarizer.html" class="nav-link"><span class="nav-icon">📝</span>Text Summarizer</a>
+                <a href="email-generator.html" class="nav-link"><span class="nav-icon">✉</span>Email Generator</a>
+                <a href="blog-generator.html" class="nav-link"><span class="nav-icon">✍</span>Blog Generator</a>
+                <a href="history.html" class="nav-link"><span class="nav-icon">↶</span>History</a>
+                <div class="menu-title" style="margin-top:25px;">Account</div>
+                <a href="profile.html" class="nav-link"><span class="nav-icon">👤</span>Profile</a>
+                <a href="settings.html" class="nav-link"><span class="nav-icon">⚙</span>Settings</a>
+                <a href="pricing.html" class="nav-link"><span class="nav-icon">♜</span>Pricing</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="upgrade-card">
+                    <h4>Upgrade to Premium</h4>
+                    <p>Unlock unlimited image generations and advanced AI features.</p>
+                    <a href="pricing.html" class="upgrade-btn">Upgrade Now</a>
+                </div>
+                <a href="login.html" class="nav-link logout"><span class="nav-icon">↪</span>Logout</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <button class="mobile-menu" onclick="openSidebar()">☰</button>
+                    <div class="page-title">
+                        <div class="page-title-icon">🖼</div>
+                        <div>
+                            <h1>AI Image Generator</h1>
+                            <p>Turn your ideas into visuals</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <div class="credits">Credits:<strong>682</strong></div>
+                    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+                </div>
+            </header>
+            <section class="content">
+                <div class="intro">
+                    <h2>Create <span>amazing images</span> with AI</h2>
+                    <p>Describe your idea, choose a style and let NovaAI turn your imagination into visuals.</p>
+                </div>
+                <div class="generator-grid">
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3>Image Settings</h3>
+                            <span>⚙️</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Describe your image</label>
+                            <textarea id="prompt" placeholder="Example: A futuristic city at sunset with flying cars, cinematic lighting, highly detailed..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Choose Style</label>
+                            <div class="style-options">
+                                <button class="style-option selected" onclick="selectStyle(this)">
+                                    <span class="style-emoji">🎨</span>Realistic
+                                </button>
+                                <button class="style-option" onclick="selectStyle(this)">
+                                    <span class="style-emoji">🌈</span>Digital Art
+                                </button>
+                                <button class="style-option" onclick="selectStyle(this)">
+                                    <span class="style-emoji">✨</span>3D
+                                </button>
+                                <button class="style-option" onclick="selectStyle(this)">
+                                    <span class="style-emoji">🖌️</span>Painting
+                                </button>
+                                <button class="style-option" onclick="selectStyle(this)">
+                                    <span class="style-emoji">🌌</span>Anime
+                                </button>
+                                <buttonclass="style-option" onclick="selectStyle(this)">
+                                    <span class="style-emoji">📷</span>Cinematic
+                                </button>
+                            </div>
+                        </div>
+                        <div class="options-row">
+                            <div class="form-group">
+                                <label>Aspect Ratio</label>
+                                <select id="ratio">
+                                    <option>1 : 1 Square</option>
+                                    <option>16 : 9 Landscape</option>
+                                    <option>9 : 16 Portrait</option>
+                                    <option>4 : 3 Standard</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Images</label>
+                                <select id="count">
+                                    <option>1 Image</option>
+                                    <option>2 Images</option>
+                                    <option>4 Images</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Quality</label>
+                            <select>
+                                <option>Standard</option>
+                                <option>High Quality</option>
+                                <option>Ultra Quality</option>
+                            </select>
+                        </div>
+                        <button class="generate-btn" id="generateBtn" onclick="generateImage()"> ✨ Generate Image</button>
+                        <p class="generate-note">Each generation uses AI credits.</p>
+                    </div>
+                    <div class="preview-area">
+                        <div class="preview-header">
+                            <h3>Generated Images</h3>
+                            <span id="resultCount">Your creations will appear here</span>
+                        </div>
+                        <div class="image-grid" id="imageGrid">
+                            <div class="empty-state" id="emptyState">
+                                <div>
+                                    <div class="empty-icon">🪄</div>
+                                    <h3>Your canvas is waiting</h3>
+                                    <p>Enter a detailed prompt on the left and click "Generate Image" to create your first AI visual.</p>
+                                </div>
+                            </div>
+                            <div class="loading-card" id="loadingCard">
+                                <div>
+                                    <div class="spinner"></div>
+                                    <h3>Creating your image...</h3>
+                                    <p>NovaAI is turning your prompt into a visual masterpiece.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips">
+                    <h3>💡 Tips for better results</h3>
+                    <div class="tip-grid">
+                        <div class="tip">
+                            <div class="tip-icon">✨</div>
+                            <div>
+                                <strong>Be descriptive</strong>
+                                <p>Mention subjects, colors, environment, lighting and mood.</p>
+                            </div>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">🎨</div>
+                            <div>
+                                <strong>Choose a style</strong>
+                                <p>Select a visual style that matches the type of image you want.</p>
+                            </div>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">🖼</div>
+                            <div>
+                                <strong>Try different ratios</strong>
+                                <p>Use landscape for banners and portrait for social media designs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            function openSidebar() {
+                document .getElementById("sidebar") .classList .add("open");
+                document .getElementById("overlay") .classList .add("show");
+            }
+            function closeSidebar() {
+                document .getElementById("sidebar") .classList .remove("open");
+                document .getElementById("overlay") .classList .remove("show");
+            }
+            function toggleTheme() {
+                document.body.classList.toggle("dark");
+                const button = document.getElementById("themeBtn");
+                if (document.body.classList.contains("dark")) {
+                    button.innerHTML = "☀️";
+                    localStorage.setItem("novaTheme", "dark");
+                } else {
+                    button.innerHTML = "🌙";
+                    localStorage.setItem("novaTheme", "light");
+                }
+            }
+            window.addEventListener("DOMContentLoaded",
+                function () {
+                    if (localStorage.getItem("novaTheme") === "dark") {
+                        document.body.classList.add("dark");
+                        document.getElementById("themeBtn").innerHTML = "☀️";
+                    }
+                }
+            );
+            function selectStyle(button) {
+                const buttons = document.querySelectorAll(".style-option");
+                buttons.forEach(function (item) {
+                    item.classList.remove("selected");
+                });
+                button.classList.add("selected");
+            }
+            function generateImage() {
+                const prompt = document .getElementById("prompt") .value .trim();
+                if (!prompt) {
+                    alert("Please describe the image you want to generate.");
+                    return;
+                }
+                const button = document.getElementById("generateBtn");
+                const emptyState = document.getElementById("emptyState");
+                const loadingCard = document.getElementById("loadingCard");
+                const imageGrid = document.getElementById("imageGrid");
+                const resultCount = document.getElementById("resultCount");
+                button.disabled = true;
+                button.classList.add("loading");
+                button.innerHTML = "⏳ Generating...";
+                emptyState.style.display = "none";
+                loadingCard.style.display = "flex";
+                resultCount.innerHTML = "Generating your image...";
+                setTimeout(function () {
+                    loadingCard.style.display = "none";
+                    button.disabled = false;
+                    button.classList.remove("loading");
+                    button.innerHTML = "✨ Generate Image";
+                    const countText = document .getElementById("count") .value;
+                    let count = 1;
+                    if (countText.includes("2")) {
+                        count = 2;
+                    }
+                    if (countText.includes("4")) {
+                        count = 4;
+                    }
+                    resultCount.innerHTML = count + " generated image" + (count > 1 ? "s" : "");
+                    for (let i = 0; i < count; i++) {
+                        createImageCard(imageGrid, prompt, i + 1);
+                    }
+                }, 1500);
+            }
+            function createImageCard(container, prompt, number) {
+
+                const card = document.createElement("div");
+                card.className = "image-card";
+                card.innerHTML = `
+                    <div class="image-preview">
+                        <div class="image-preview-content">
+                            <span class="big-icon">🖼️</span>
+                            <p>AI Generated Preview</p>
+                        </div>
+                    </div>
+                    <div class="image-info">
+                        <h4>NovaAI Creation #${number}</h4>
+                        <p>${escapeHTML(prompt.substring(0, 70))}${prompt.length > 70 ? "..." : ""}</p>
+                        <div class="image-actions">
+                            <button class="image-action" onclick="downloadDemo()">↓ Download</button>
+                            <button class="image-action" onclick="copyPrompt(this)">📋 Copy Prompt</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+            function copyPrompt(button) {
+                const card = button.closest(".image-card");
+                const description = card.querySelector("p").innerText;
+                navigator.clipboard.writeText(description);
+                const oldText = button.innerHTML;
+                button.innerHTML = "✓ Copied";
+                setTimeout(function () {
+                    button.innerHTML = oldText;
+                }, 1500);
+            }
+            function downloadDemo() {
+                alert("Download functionality can be connected to the generated image API later.");
+            }
+            function escapeHTML(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        </script>
+    </body>
+</html>

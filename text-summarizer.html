@@ -1,0 +1,963 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Text Summarizer - NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f7f8fc;
+                color: #17172b;
+                min-height: 100vh;
+            }
+            button, textarea, select {
+                font-family: inherit;
+            }
+            button {
+                cursor: pointer;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: #ffffff;
+                border-right: 1px solid #e7e6ef;
+                display: flex;
+                flex-direction: column;
+                z-index: 1000;
+            }
+            .logo {
+                padding: 24px 22px;
+                font-size: 23px;
+                font-weight: 800;
+                color: #6c4df6;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .logo span {
+                color: #17172b;
+            }
+            .nav {
+                padding: 20px 14px;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .nav-title {
+                font-size: 11px;
+                color: #9a99a8;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 8px 10px 12px;
+            }
+            .nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 13px;
+                margin-bottom: 5px;
+                border-radius: 10px;
+                color: #68677a;
+                font-size: 14px;
+                font-weight: 600;
+                transition: 0.25s;
+            }
+            .nav a:hover {
+                background: #f2f0ff;
+                color: #6c4df6;
+            }
+            .nav a.active {
+                background: #f0edff;
+                color: #6c4df6;
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 17px;
+            }
+            .upgrade-card {
+                margin: 15px;
+                padding: 17px;
+                border-radius: 14px;
+                background: #17172b;
+                color: white;
+            }
+            .upgrade-card h4 {
+                font-size: 14px;
+                margin-bottom: 7px;
+            }
+            .upgrade-card p {
+                font-size: 12px;
+                line-height: 1.5;
+                color: #c7c6d4;
+                margin-bottom: 13px;
+            }
+            .upgrade-card a {
+                display: block;
+                text-align: center;
+                background: #6c4df6;
+                padding: 9px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 74px;
+                background: white;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: #f2f0ff;
+                color: #6c4df6;
+                width: 40px;
+                height: 40px;
+                border-radius: 9px;
+                font-size: 20px;
+            }
+            .page-title h2 {
+                font-size: 19px;
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: #8a8999;
+                font-size: 12px;
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .credits {
+                background: #f0edff;
+                color: #6c4df6;
+                padding: 8px 13px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .theme-btn {
+                width: 39px;
+                height: 39px;
+                border: 1px solid #e5e4ec;
+                background: white;
+                border-radius: 9px;
+                font-size: 17px;
+            }
+            .avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #6c4df6;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .content {
+                padding: 30px;
+                max-width: 1450px;
+                margin: auto;
+            }
+            .summarizer-layout {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 22px;
+            }
+            .card {
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .card-header {
+                padding: 20px 22px;
+                border-bottom: 1px solid #e8e7ef;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+            }
+            .header-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .card-header h3 {
+                font-size: 15px;
+            }
+            .card-header p {
+                font-size: 11px;
+                color: #9291a0;
+                margin-top: 3px;
+            }
+            .card-body {
+                padding: 22px;
+            }
+            .label {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                color: #555465;
+                margin-bottom: 8px;
+            }
+            .text-area {
+                width: 100%;
+                height: 360px;
+                resize: vertical;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #29283d;
+                border-radius: 11px;
+                padding: 14px;
+                outline: none;
+                font-size: 13px;
+                line-height: 1.7;
+                transition: 0.2s;
+            }
+            .text-area:focus {
+                border-color: #6c4df6;
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            .text-area::placeholder {
+                color: #aaa9b8;
+            }
+            .input-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 9px;
+            }
+            .counter {
+                font-size: 11px;
+                color: #9291a0;
+            }
+            .clear-input {
+                border: none;
+                background: transparent;
+                color: #77768a;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .clear-input:hover {
+                color: #6c4df6;
+            }
+            .options {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+                margin-top: 20px;
+            }
+            .option label {
+                display: block;
+                font-size: 11px;
+                font-weight: 700;
+                color: #555465;
+                margin-bottom: 7px;
+            }
+            select {
+                width: 100%;
+                padding: 11px 12px;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #29283d;
+                border-radius: 9px;
+                outline: none;
+                font-size: 12px;
+                cursor: pointer;
+            }
+            select:focus {
+                border-color: #6c4df6;
+            }
+            .summarize-btn {
+                width: 100%;
+                border: none;
+                background: #6c4df6;
+                color: white;
+                padding: 13px;
+                border-radius: 10px;
+                margin-top: 18px;
+                font-size: 13px;
+                font-weight: 700;
+                transition: 0.25s;
+            }
+            .summarize-btn:hover {
+                background: #5940d8;
+                transform: translateY(-1px);
+            }
+            .summarize-btn.loading {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+            .credit-note {
+                text-align: center;
+                font-size: 10px;
+                color: #9998a7;
+                margin-top: 9px;
+            }
+            .output-body {
+                padding: 22px;
+            }
+            .summary-box {
+                min-height: 360px;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                border-radius: 11px;
+                padding: 18px;
+                position: relative;
+            }
+            .empty-state {
+                min-height: 320px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                color: #9a99a8;
+                padding: 25px;
+            }
+            .empty-icon {
+                width: 65px;
+                height: 65px;
+                border-radius: 18px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 27px;
+                margin-bottom: 16px;
+            }
+            .empty-state h3 {
+                font-size: 15px;
+                color: #555465;
+                margin-bottom: 7px;
+            }
+            .empty-state p {
+                font-size: 12px;
+                line-height: 1.6;
+                max-width: 350px;
+            }
+            .summary-text {
+                display: none;
+                font-size: 13px;
+                line-height: 1.8;
+                color: #3c3b4e;
+                white-space: pre-line;
+            }
+            .output-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 13px;
+            }
+            .action-btn {
+                flex: 1;
+                padding: 10px;
+                border-radius: 9px;
+                border: 1px solid #dedde7;
+                background: white;
+                color: #68677a;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .action-btn:hover {
+                border-color: #6c4df6;
+                color: #6c4df6;
+            }
+            .summary-info {
+                display: flex;
+                gap: 9px;
+                margin-top: 15px;
+            }
+            .stat {
+                flex: 1;
+                background: #f7f6fc;
+                border-radius: 9px;
+                padding: 11px;
+            }
+            .stat span {
+                display: block;
+                color: #9493a2;
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+            .stat strong {
+                font-size: 13px;
+                color: #38374a;
+            }
+            .loading {
+                display: none;
+                padding: 10px;
+            }
+            .loading.show {
+                display: block;
+            }
+            .loading-line {
+                height: 11px;
+                background: #e5e3ed;
+                border-radius: 6px;
+                margin-bottom: 14px;
+                animation: pulse 1.4s infinite;
+            }
+            .loading-line:nth-child(1) {
+                width: 95%;
+            }
+            .loading-line:nth-child(2) {
+                width: 82%;
+            }
+            .loading-line:nth-child(3) {
+                width: 90%;
+            }
+            .loading-line:nth-child(4) {
+                width: 65%;
+            }
+            .loading-line:nth-child(5) {
+                width: 86%;
+            }
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 0.4;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }
+            .tips {
+                margin-top: 22px;
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                padding: 22px;
+            }
+            .tips h3 {
+                font-size: 15px;
+                margin-bottom: 15px;
+            }
+            .tips-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .tip {
+                background: #fafafe;
+                border: 1px solid #eeeef4;
+                padding: 15px;
+                border-radius: 11px;
+            }
+            .tip-icon {
+                color: #6c4df6;
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+            .tip h4 {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            .tip p {
+                color: #8c8b9a;
+                font-size: 11px;
+                line-height: 1.6;
+            }
+            body.dark {
+                background: #10101c;
+                color: #f3f2fa;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .card, body.dark .tips {
+                background: #181827;
+                border-color: #29293b;
+            }
+            body.dark .logo span, body.dark .page-title h2, body.dark .card-header h3, body.dark .tips h3 {
+                color: #f3f2fa;
+            }
+            body.dark .nav a {
+                color: #aaa9b9;
+            }
+            body.dark .nav a:hover, body.dark .nav a.active {
+                background: #25243b;
+                color: #a99cff;
+            }
+            body.dark .topbar {
+                border-color: #29293b;
+            }
+            body.dark .theme-btn, body.dark .text-area, body.dark select, body.dark .action-btn {
+                background: #202033;
+                color: #e7e6ef;
+                border-color: #353549;
+            }
+            body.dark .card-header {
+                border-color: #303047;
+            }
+            body.dark .label, body.dark .option label {
+                color: #c7c6d4;
+            }
+            body.dark .summary-box {
+                background: #202033;
+                border-color: #353549;
+            }
+            body.dark .summary-text {
+                color: #dedde8;
+            }
+            body.dark .empty-state h3 {
+                color: #d9d8e3;
+            }
+            body.dark .stat, body.dark .tip {
+                background: #202033;
+                border-color: #303047;
+            }
+            body.dark .stat strong, body.dark .tip h4 {
+                color: #e7e6ef;
+            }
+            body.dark .tips {
+                background: #181827;
+            }
+            body.dark .loading-line {
+                background: #303047;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 950px) {
+                .summarizer-layout {
+                    grid-template-columns: 1fr;
+                }
+                .tips-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            @media (max-width: 850px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: 0.3s;
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 900;
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+            }
+            @media (max-width: 600px) {
+                .topbar {
+                    padding: 0 15px;
+                }
+                .page-title p, .credits {
+                    display: none;
+                }
+                .content {
+                    padding: 18px 14px;
+                }
+                .avatar {
+                    display: none;
+                }
+                .card-body, .output-body {
+                    padding: 16px;
+                }
+                .options {
+                    grid-template-columns: 1fr;
+                }
+                .text-area {
+                    height: 300px;
+                }
+                .summary-box {
+                    min-height: 320px;
+                }
+                .output-actions {
+                    flex-direction: column;
+                }
+                .summary-info {
+                    flex-direction: column;
+                }
+                .tips {
+                    padding: 17px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                Nova<span>AI</span>
+            </div>
+            <nav class="nav">
+                <div class="nav-title">Workspace</div>
+                <a href="dashboard.html">
+                    <span class="nav-icon">⌂</span>Dashboard
+                </a>
+                <a href="chat.html">
+                    <span class="nav-icon">✦</span>AI Chat
+                </a>
+                <a href="image-generator.html">
+                    <span class="nav-icon">▧</span>Image Generator
+                </a>
+                <a href="code-generator.html">
+                    <span class="nav-icon">&lt;/&gt;</span>Code Generator
+                </a>
+                <a href="text-summarizer.html" class="active">
+                    <span class="nav-icon">≡</span>Text Summarizer
+                </a>
+                <a href="email-generator.html">
+                    <span class="nav-icon">✉</span>Email Generator
+                </a>
+                <a href="blog-generator.html">
+                    <span class="nav-icon">▤</span>Blog Generator
+                </a>
+                <div class="nav-title">Manage</div>
+                <a href="history.html">
+                    <span class="nav-icon">◷</span>History
+                </a>
+                <a href="profile.html">
+                    <span class="nav-icon">◎</span>Profile
+                </a>
+                <a href="settings.html">
+                    <span class="nav-icon">⚙</span>Settings
+                </a>
+                <a href="pricing.html">
+                    <span class="nav-icon">◆</span>Pricing
+                </a>
+            </nav>
+            <div class="upgrade-card">
+                <h4>Upgrade to Premium</h4>
+                <p>Get more AI generations, longer summaries and advanced tools.</p>
+                <a href="pricing.html">View Plans</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="menuBtn">☰</button>
+                    <div class="page-title">
+                        <h2>Text Summarizer</h2>
+                        <p>Turn long content into clear and concise summaries</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="credits">⚡ 42 Credits</div>
+                    <button class="theme-btn" id="themeBtn">☾</button>
+                    <div class="avatar">JD</div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="summarizer-layout">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="header-left">
+                                <div class="header-icon">≡</div>
+                                <div>
+                                    <h3>Enter Your Text</h3>
+                                    <p>Paste an article, document or paragraph</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <label class="label">Text to Summarize</label>
+                            <textarea class="text-area" id="inputText" placeholder="Paste your text here... Example:Artificial intelligence is transforming many industries by helping organizations automate repetitive tasks, analyze large amounts of data, and improve decision-making. Modern AI systems are increasingly being used in education, healthcare, finance, marketing and software development..."></textarea>
+                            <div class="input-footer">
+                                <span class="counter" id="wordCount">
+                                    0 words • 0 characters
+                                </span>
+                                <button class="clear-input" id="clearInput">Clear text</button>
+                            </div>
+                            <div class="options">
+                                <div class="option">
+                                    <label>Summary Length</label>
+                                    <select id="summaryLength">
+                                        <option value="short">Short</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="long">Detailed</option>
+                                    </select>
+                                </div>
+                                <div class="option">
+                                    <label>Summary Style</label>
+                                    <select id="summaryStyle">
+                                        <option>Simple</option>
+                                        <option>Professional</option>
+                                        <option>Bullet Points</option>
+                                        <option>Academic</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="summarize-btn" id="summarizeBtn">✦ Summarize Text</button>
+                            <div class="credit-note">
+                                This generation uses 1 AI credit
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="header-left">
+                                <div class="header-icon">✦</div>
+                                <div>
+                                    <h3>AI Summary</h3>
+                                    <p id="summaryStatus">Your summarized content will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="output-body">
+                            <div class="summary-box">
+                                <div class="empty-state" id="emptyState">
+                                    <div class="empty-icon">✦</div>
+                                    <h3>Your summary will appear here</h3>
+                                    <p>Add some text on the left and click "Summarize Text" to generate a concise version of your content.</p>
+                                </div>
+                                <div class="loading" id="loading">
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                </div>
+                                <div class="summary-text" id="summaryText"></div>
+                            </div>
+                            <div class="output-actions">
+                                <button class="action-btn" id="copyBtn">Copy Summary</button>
+                                <button class="action-btn" id="downloadBtn">Download</button>
+                                <button class="action-btn" id="clearSummaryBtn">Clear</button>
+                            </div>
+                            <div class="summary-info">
+                                <div class="stat">
+                                    <span>Original Words</span>
+                                    <strong id="originalWords">0</strong>
+                                </div>
+                                <div class="stat">
+                                    <span>Summary Words</span>
+                                    <strong id="summaryWords">0</strong>
+                                </div>
+                                <div class="stat">
+                                    <span>Reduction</span>
+                                    <strong id="reduction">0%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips">
+                    <h3>Tips for Better Summaries</h3>
+                    <div class="tips-grid">
+                        <div class="tip">
+                            <div class="tip-icon">✓</div>
+                            <h4>Use Complete Content</h4>
+                            <p>Paste the complete article or text you want summarized for better context.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">✦</div>
+                            <h4>Choose the Right Length</h4>
+                            <p>Select short for quick points, medium for balanced summaries, or detailed for more information.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">≡</div>
+                            <h4>Try Different Styles</h4>
+                            <p>Use bullet points for quick reading or professional and academic styles for formal content.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const menuBtn = document.getElementById("menuBtn");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const themeBtn = document.getElementById("themeBtn");
+            if (localStorage.getItem("novaTheme") === "dark") {
+                document.body.classList.add("dark");
+                themeBtn.textContent = "☀";
+            }
+            themeBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark");
+                if (document.body.classList.contains("dark")) {
+                    localStorage.setItem("novaTheme", "dark");
+                    themeBtn.textContent = "☀";
+                } else {
+                    localStorage.setItem("novaTheme", "light");
+                    themeBtn.textContent = "☾";
+                }
+            });
+            const inputText = document.getElementById("inputText");
+            const wordCount = document.getElementById("wordCount");
+            inputText.addEventListener("input", updateCounter);
+            function updateCounter() {
+                const text = inputText.value.trim();
+                const words = text ? text.split(/\s+/).length : 0;
+                const characters = text.length;
+                wordCount.textContent = `${words} words • ${characters} characters`;
+            }
+            const clearInput = document.getElementById("clearInput");
+            clearInput.addEventListener("click", () => {
+                inputText.value = "";
+                updateCounter();
+                inputText.focus();
+            });
+            const summarizeBtn = document.getElementById("summarizeBtn");
+            const emptyState = document.getElementById("emptyState");
+            const loading = document.getElementById("loading");
+            const summaryText =  document.getElementById("summaryText");
+            const summaryStatus = document.getElementById("summaryStatus");
+            const summaryLength = document.getElementById("summaryLength");
+            const summaryStyle = document.getElementById("summaryStyle");
+            const originalWords = document.getElementById("originalWords");
+            const summaryWords = document.getElementById("summaryWords");
+            const reduction = document.getElementById("reduction");
+            summarizeBtn.addEventListener("click", generateSummary);
+            function generateSummary() {
+                const text = inputText.value.trim();
+                if (!text) {
+                    inputText.focus();
+                    inputText.style.borderColor = "#e05252";
+                    setTimeout(() => {
+                        inputText.style.borderColor = "";
+                    }, 1500);
+                    return;
+                }
+                emptyState.style.display = "none";
+                summaryText.style.display = "none";
+                loading.classList.add("show");
+                summarizeBtn.classList.add("loading");
+                summarizeBtn.textContent = "Summarizing...";
+                setTimeout(() => {
+                    const words = text.split(/\s+/).filter(Boolean);
+                    let selectedLength = summaryLength.value;
+                    let numberOfSentences = 2;
+                    if (selectedLength === "short") {
+                        numberOfSentences = 1;
+                    }
+                    if (selectedLength === "medium") {
+                        numberOfSentences = 2;
+                    }
+                    if (selectedLength === "long") {
+                        numberOfSentences = 4;
+                    }
+                    let sentences = text .split(/[.!?]+/) .map(sentence => sentence.trim()) .filter(sentence => sentence.length > 20);
+                    let selectedSentences = sentences.slice(0, numberOfSentences);
+                    if (selectedSentences.length === 0) {
+                        selectedSentences = [text.substring(0, 400)];
+                    }
+                    let result;
+                    if (summaryStyle.value === "Bullet Points") {
+                        result = selectedSentences
+                            .map(sentence => "• " + sentence + ".")
+                            .join("\n\n");
+                    } else {
+                        result = selectedSentences
+                                .map(sentence => sentence + ".")
+                                .join(" ");
+                    }
+                    loading.classList.remove("show");
+                    summaryText.textContent = result;
+                    summaryText.style.display = "block";
+                    summaryStatus.textContent = "Summary generated successfully";
+                    summarizeBtn.classList.remove("loading");
+                    summarizeBtn.textContent = "✦ Summarize Text";
+                    const originalCount = words.length;
+                    const summaryCount = result
+                            .split(/\s+/)
+                            .filter(Boolean)
+                            .length;
+                    const reductionValue = originalCount > 0 ? Math.max( 0, Math.round((1 - summaryCount / originalCount) * 100)) : 0;
+                    originalWords.textContent = originalCount;
+                    summaryWords.textContent = summaryCount;
+                    reduction.textContent = reductionValue + "%";
+                }, 1300);
+            }
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.addEventListener("click", async () => {
+                const text = summaryText.textContent.trim();
+                if (!text) {
+                    alert("Generate a summary first.");
+                    return;
+                }
+                try {
+                    await navigator.clipboard.writeText(text);
+                    copyBtn.textContent = "Copied!";
+                    setTimeout(() => {
+                        copyBtn.textContent = "Copy Summary";
+                    }, 1500);
+                } catch (error) {
+                    alert("Unable to copy the summary.");
+                }
+            });
+            const downloadBtn = document.getElementById("downloadBtn");
+            downloadBtn.addEventListener("click", () => {
+                const text = summaryText.textContent.trim();
+                if (!text) {
+                    alert("Generate a summary first.");
+                    return;
+                }
+                const blob = new Blob([text], {type: "text/plain"});
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "novaai-summary.txt";
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+            const clearSummaryBtn = document.getElementById("clearSummaryBtn");
+            clearSummaryBtn.addEventListener("click", () => {
+                summaryText.textContent = "";
+                summaryText.style.display = "none";
+                loading.classList.remove("show");
+                emptyState.style.display = "flex";
+                summaryStatus.textContent = "Your summarized content will appear here";
+                originalWords.textContent = "0";
+                summaryWords.textContent = "0";
+                reduction.textContent = "0%";
+            });
+        </script>
+    </body>
+</html>

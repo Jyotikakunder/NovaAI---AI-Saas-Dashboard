@@ -1,0 +1,1047 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Generator - NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f7f8fc;
+                color: #17172b;
+                min-height: 100vh;
+            }
+            button, input, textarea, select {
+                font-family: inherit;
+            }
+            button {
+                cursor: pointer;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: #ffffff;
+                border-right: 1px solid #e7e6ef;
+                display: flex;
+                flex-direction: column;
+                z-index: 1000;
+            }
+            .logo {
+                padding: 24px 22px;
+                font-size: 23px;
+                font-weight: 800;
+                color: #6c4df6;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .logo span {
+                color: #17172b;
+            }
+            .nav {
+                padding: 20px 14px;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .nav-title {
+                font-size: 11px;
+                color: #9a99a8;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 8px 10px 12px;
+            }
+            .nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 13px;
+                margin-bottom: 5px;
+                border-radius: 10px;
+                color: #68677a;
+                font-size: 14px;
+                font-weight: 600;
+                transition: 0.25s;
+            }
+            .nav a:hover {
+                background: #f2f0ff;
+                color: #6c4df6;
+            }
+            .nav a.active {
+                background: #f0edff;
+                color: #6c4df6;
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 17px;
+            }
+            .upgrade-card {
+                margin: 15px;
+                padding: 17px;
+                border-radius: 14px;
+                background: #17172b;
+                color: white;
+            }
+            .upgrade-card h4 {
+                font-size: 14px;
+                margin-bottom: 7px;
+            }
+            .upgrade-card p {
+                font-size: 12px;
+                line-height: 1.5;
+                color: #c7c6d4;
+                margin-bottom: 13px;
+            }
+            .upgrade-card a {
+                display: block;
+                text-align: center;
+                background: #6c4df6;
+                padding: 9px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 74px;
+                background: white;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: #f2f0ff;
+                color: #6c4df6;
+                width: 40px;
+                height: 40px;
+                border-radius: 9px;
+                font-size: 20px;
+            }
+            .page-title h2 {
+                font-size: 19px;
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: #8a8999;
+                font-size: 12px;
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .credits {
+                background: #f0edff;
+                color: #6c4df6;
+                padding: 8px 13px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .theme-btn {
+                width: 39px;
+                height: 39px;
+                border: 1px solid #e5e4ec;
+                background: white;
+                border-radius: 9px;
+                font-size: 17px;
+            }
+            .avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #6c4df6;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .content {
+                padding: 30px;
+                max-width: 1450px;
+                margin: auto;
+            }
+            .generator-layout {
+                display: grid;
+                grid-template-columns: 390px 1fr;
+                gap: 22px;
+                align-items: start;
+            }
+            .card {
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .card-header {
+                padding: 20px 22px;
+                border-bottom: 1px solid #e8e7ef;
+                display: flex;
+                align-items: center;
+                gap: 11px;
+            }
+            .header-icon {
+                width: 39px;
+                height: 39px;
+                border-radius: 10px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .card-header h3 {
+                font-size: 15px;
+            }
+            .card-header p {
+                color: #9291a0;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+            .card-body {
+                padding: 22px;
+            }
+            .field {
+                margin-bottom: 17px;
+            }
+            .label {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                color: #555465;
+                margin-bottom: 8px;
+            }
+            input, textarea, select {
+                width: 100%;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #29283d;
+                border-radius: 10px;
+                padding: 11px 13px;
+                outline: none;
+                font-size: 12px;
+                transition: 0.2s;
+            }
+            input:focus, textarea:focus, select:focus {
+                border-color: #6c4df6;
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+                line-height: 1.6;
+            }
+            .two-column {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .generate-btn {
+                width: 100%;
+                border: none;
+                background: #6c4df6;
+                color: white;
+                padding: 13px;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 700;
+                transition: 0.25s;
+            }
+            .generate-btn:hover {
+                background: #5940d8;
+                transform: translateY(-1px);
+            }
+            .generate-btn.loading {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+            .credit-note {
+                text-align: center;
+                color: #9998a7;
+                font-size: 10px;
+                margin-top: 9px;
+            }
+            .purpose-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-top: 3px;
+            }
+            .purpose {
+                border: 1px solid #e1e0e8;
+                background: #fafafe;
+                color: #68677a;
+                border-radius: 9px;
+                padding: 9px 7px;
+                font-size: 11px;
+                font-weight: 600;
+                transition: 0.2s;
+            }
+            .purpose:hover {
+                border-color: #6c4df6;
+                color: #6c4df6;
+            }
+            .purpose.active {
+                background: #f0edff;
+                border-color: #6c4df6;
+                color: #6c4df6;
+            }
+            .preview-card {
+                min-height: 650px;
+            }
+            .preview-header {
+                padding: 17px 20px;
+                border-bottom: 1px solid #e8e7ef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .preview-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .preview-title h3 {
+                font-size: 14px;
+            }
+            .preview-title p {
+                color: #9291a0;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+            .preview-actions {
+                display: flex;
+                gap: 7px;
+            }
+            .small-btn {
+                border: 1px solid #dedde7;
+                background: white;
+                color: #68677a;
+                border-radius: 8px;
+                padding: 8px 11px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .small-btn:hover {
+                border-color: #6c4df6;
+                color: #6c4df6;
+            }
+            .email-area {
+                padding: 22px;
+            }
+            .email-window {
+                border: 1px solid #e2e1e9;
+                border-radius: 13px;
+                overflow: hidden;
+                background: white;
+            }
+            .email-toolbar {
+                background: #f7f7fb;
+                padding: 12px 15px;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                gap: 7px;
+            }
+            .toolbar-dot {
+                width: 9px;
+                height: 9px;
+                border-radius: 50%;
+                background: #b5b4c1;
+            }
+            .email-meta {
+                padding: 17px;
+                border-bottom: 1px solid #eeeeF4;
+            }
+            .meta-row {
+                display: flex;
+                margin-bottom: 8px;
+                font-size: 12px;
+            }
+            .meta-row:last-child {
+                margin-bottom: 0;
+            }
+            .meta-label {
+                width: 65px;
+                color: #9998a7;
+                font-weight: 600;
+            }
+            .meta-value {
+                color: #444356;
+                flex: 1;
+                word-break: break-word;
+            }
+            .email-content {
+                padding: 24px;
+                min-height: 370px;
+                color: #393849;
+                font-size: 13px;
+                line-height: 1.8;
+                white-space: pre-line;
+            }
+            .empty-state {
+                min-height: 340px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: #9998a7;
+                padding: 30px;
+            }
+            .empty-icon {
+                width: 65px;
+                height: 65px;
+                background: #f0edff;
+                color: #6c4df6;
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 27px;
+                margin-bottom: 16px;
+            }
+            .empty-state h3 {
+                color: #555465;
+                font-size: 15px;
+                margin-bottom: 7px;
+            }
+            .empty-state p {
+                max-width: 350px;
+                font-size: 12px;
+                line-height: 1.6;
+            }
+            .loading {
+                display: none;
+                padding: 25px;
+            }
+            .loading.show {
+                display: block;
+            }
+            .loading-line {
+                height: 11px;
+                background: #e5e4ec;
+                border-radius: 6px;
+                margin-bottom: 14px;
+                animation: pulse 1.4s infinite;
+            }
+            .loading-line:nth-child(1) {
+                width: 90%;
+            }
+            .loading-line:nth-child(2) {
+                width: 70%;
+            }
+            .loading-line:nth-child(3) {
+                width: 95%;
+            }
+            .loading-line:nth-child(4) {
+                width: 82%;
+            }
+            .loading-line:nth-child(5) {
+                width: 65%;
+            }
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 0.4;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }
+            .tips {
+                margin-top: 22px;
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                padding: 22px;
+            }
+            .tips h3 {
+                font-size: 15px;
+                margin-bottom: 15px;
+            }
+            .tips-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .tip {
+                background: #fafafe;
+                border: 1px solid #eeeef4;
+                padding: 15px;
+                border-radius: 11px;
+            }
+            .tip-icon {
+                color: #6c4df6;
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+            .tip h4 {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            .tip p {
+                color: #8c8b9a;
+                font-size: 11px;
+                line-height: 1.6;
+            }
+            body.dark {
+                background: #10101c;
+                color: #f3f2fa;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .card, body.dark .tips {
+                background: #181827;
+                border-color: #29293b;
+            }
+            body.dark .logo span, body.dark .page-title h2, body.dark .card-header h3, body.dark .preview-title h3, body.dark .tips h3 {
+                color: #f3f2fa;
+            }
+            body.dark .nav a {
+                color: #aaa9b9;
+            }
+            body.dark .nav a:hover, body.dark .nav a.active {
+                background: #25243b;
+                color: #a99cff;
+            }
+            body.dark .topbar {
+                border-color: #29293b;
+            }
+            body.dark .theme-btn, body.dark input, body.dark textarea, body.dark select, body.dark .purpose, body.dark .small-btn {
+                background: #202033;
+                color: #e7e6ef;
+                border-color: #353549;
+            }
+            body.dark .label {
+                color: #c7c6d4;
+            }
+            body.dark .card-header,
+            body.dark .preview-header {
+                border-color: #303047;
+            }
+            body.dark .email-window {
+                background: #202033;
+                border-color: #353549;
+            }
+            body.dark .email-toolbar {
+                background: #181827;
+                border-color: #353549;
+            }
+            body.dark .email-meta {
+                border-color: #353549;
+            }
+            body.dark .meta-value, body.dark .email-content {
+                color: #dedde8;
+            }
+            body.dark .empty-state h3 {
+                color: #dedde8;
+            }
+            body.dark .tip {
+                background: #202033;
+                border-color: #303047;
+            }
+            body.dark .tip h4 {
+                color: #e7e6ef;
+            }
+            body.dark .loading-line {
+                background: #303047;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1050px) {
+                .generator-layout {
+                    grid-template-columns: 340px 1fr;
+                }
+                .tips-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            @media (max-width: 850px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: 0.3s;
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 900;
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+                .generator-layout {
+                    grid-template-columns: 1fr;
+                }
+            }
+            @media (max-width: 600px) {
+                .topbar {
+                    padding: 0 15px;
+                }
+                .page-title p, .credits {
+                    display: none;
+                }
+                .avatar {
+                    display: none;
+                }
+                .content {
+                    padding: 18px 14px;
+                }
+                .card-body,.email-area {
+                    padding: 16px;
+                }
+                .two-column {
+                    grid-template-columns: 1fr;
+                    gap: 0;
+                }
+                .preview-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+                .preview-actions {
+                    width: 100%;
+                }
+                .small-btn {
+                    flex: 1;
+                }
+                .email-content {
+                    min-height: 300px;
+                }
+                .tips {
+                    padding: 17px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">Nova<span>AI</span></div>
+            <nav class="nav">
+                <div class="nav-title">Workspace</div>
+                <a href="dashboard.html">
+                    <span class="nav-icon">⌂</span>Dashboard
+                </a>
+                <a href="chat.html">
+                    <span class="nav-icon">✦</span>AI Chat
+                </a>
+                <a href="image-generator.html">
+                    <span class="nav-icon">▧</span>Image Generator
+                </a>
+                <a href="code-generator.html">
+                    <span class="nav-icon">&lt;/&gt;</span>
+                </a>
+                <a href="text-summarizer.html">
+                    <span class="nav-icon">≡</span>Text Summarizer
+                </a>
+                <a href="email-generator.html" class="active">
+                    <span class="nav-icon">✉</span>Email Generator
+                </a>
+                <a href="blog-generator.html">
+                    <span class="nav-icon">▤</span>Blog Generator
+                </a>
+                <div class="nav-title">Manage</div>
+                <a href="history.html">
+                    <span class="nav-icon">◷</span>History
+                </a>
+                <a href="profile.html">
+                    <span class="nav-icon">◎</span>Profile
+                </a>
+                <a href="settings.html">
+                    <span class="nav-icon">⚙</span>Settings
+                </a>
+                <a href="pricing.html">
+                    <span class="nav-icon">◆</span>Pricing
+                </a>
+            </nav>
+            <div class="upgrade-card">
+                <h4>Upgrade to Premium</h4>
+                <p>Get more AI generations, advanced tools and higher limits.</p>
+                <a href="pricing.html">View Plans</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="menuBtn">☰</button>
+                    <div class="page-title">
+                        <h2>AI Email Generator</h2>
+                        <p>Write professional emails in seconds</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="credits">⚡ 42 Credit
+                    </div>
+                    <button class="theme-btn" id="themeBtn">☾</button>
+                    <div class="avatar">JD</div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="generator-layout">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="header-icon">✉</div>
+                            <div>
+                                <h3>Create Your Email</h3>
+                                <p>Tell NovaAI what you want to write</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="field">
+                                <label class="label">Recipient</label>
+                                <input type="text" id="recipient" placeholder="e.g. Hiring Manager">
+                            </div>
+                            <div class="field">
+                                <label class="label">Subject</label>
+                                <input type="text" id="subject" placeholder="e.g. Internship Application">
+                            </div>
+                            <div class="field">
+                                <label class="label">Email Purpose</label>
+                                <div class="purpose-grid">
+                                    <button class="purpose active" data-purpose="Professional">Professional</button>
+                                    <button class="purpose" data-purpose="Job Application">Job Application</button>
+                                    <button class="purpose" data-purpose="Follow-up">Follow-up</button>
+                                    <button class="purpose" data-purpose="Thank You">Thank You</button>
+                                    <button class="purpose" data-purpose="Meeting">Meeting</button>
+                                    <button class="purpose" data-purpose="Request">Request</button>
+                                </div>
+                            </div>
+                            <div class="two-column">
+                                <div class="field">
+                                    <label class="label">Tone</label>
+                                    <select id="tone">
+                                        <option>Professional</option>
+                                        <option>Friendly</option>
+                                        <option>Formal</option>
+                                        <option>Casual</option>
+                                        <option>Confident</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Length</label>
+                                    <select id="length">
+                                        <option>Short</option>
+                                        <option selected>Medium</option>
+                                        <option>Detailed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">What should the email say?</label>
+                                <textarea id="message" placeholder="Example: I want to apply for a frontend development internship. Mention that I have experience with HTML, CSS and Python and I am currently pursuing BCA."></textarea>
+                            </div>
+                            <div class="field">
+                                <label class="label">Additional Instructions</label>
+                                <input type="text" id="instructions" placeholder="e.g. Keep it concise and confident">
+                            </div>
+                            <button class="generate-btn" id="generateBtn">✦ Generate Email</button>
+                            <div class="credit-note">This generation uses 1 AI credit</div>
+                        </div>
+                    </div>
+                    <div class="card preview-card">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                <div class="header-icon">✦</div>
+                                <div>
+                                    <h3>Generated Email</h3>
+                                    <p id="status">Your email will appear here</p>
+                                </div>
+                            </div>
+                            <div class="preview-actions">
+                                <button class="small-btn" id="copyBtn">Copy</button>
+                                <button class="small-btn" id="downloadBtn">Download</button>
+                                <button class="small-btn" id="clearBtn">Clear</button>
+                            </div>
+                        </div>
+                        <div class="email-area">
+                            <div class="email-window">
+                                <div class="email-toolbar">
+                                    <span class="toolbar-dot"></span>
+                                    <span class="toolbar-dot"></span>
+                                    <span class="toolbar-dot"></span>
+                                </div>
+                                <div class="email-meta" id="emailMeta" style="display:none;">
+                                    <div class="meta-row">
+                                        <span class="meta-label"> To:</span>
+                                        <span class="meta-value" id="previewRecipient"></span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Subject:</span>
+                                        <span class="meta-value" id="previewSubject"></span>
+                                    </div>
+                                </div>
+                                <div class="empty-state" id="emptyState">
+                                    <div class="empty-icon">✉</div>
+                                    <h3>Your email will appear here</h3>
+                                    <p>Add your email details on the left and click "Generate Email" to create a polished message.</p>
+                                </div>
+                                <div class="loading" id="loading">
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                </div>
+                                <div class="email-content" id="emailContent" style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips">
+                    <h3>Tips for Better Emails</h3>
+                    <div class="tips-grid">
+                        <div class="tip">
+                            <div class="tip-icon">✓</div>
+                            <h4>Be Specific</h4>
+                            <p>Clearly explain the purpose of your email and include important details.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">✦</div>
+                            <h4>Select the Right Tone</h4>
+                            <p>Choose professional, friendly, formal or casual depending on your recipient.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">@</div>
+                            <h4>Keep It Clear</h4>
+                            <p>Short and well-structured emails are easier to read and understand.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const menuBtn = document.getElementById("menuBtn");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const themeBtn = document.getElementById("themeBtn");
+            if (localStorage.getItem("novaTheme") === "dark") {
+                document.body.classList.add("dark");
+                themeBtn.textContent = "☀";
+            }
+            themeBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark");
+                if (document.body.classList.contains("dark")) {
+                    localStorage.setItem("novaTheme", "dark");
+                    themeBtn.textContent = "☀";
+                } else {
+                    localStorage.setItem("novaTheme", "light");
+                    themeBtn.textContent = "☾";
+                }
+            });
+            const purposeButtons = document.querySelectorAll(".purpose");
+            let selectedPurpose = "Professional";
+            purposeButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    purposeButtons.forEach(btn => {
+                        btn.classList.remove("active");
+                    });
+                    button.classList.add("active");
+                    selectedPurpose = button.dataset.purpose;
+                });
+            });
+            const recipient = document.getElementById("recipient");
+            const subject = document.getElementById("subject");
+            const message = document.getElementById("message");
+            const instructions = document.getElementById("instructions");
+            const tone = document.getElementById("tone");
+            const length = document.getElementById("length");
+            const generateBtn = document.getElementById("generateBtn");
+            const emptyState = document.getElementById("emptyState");
+            const loading = document.getElementById("loading");
+            const emailContent = document.getElementById("emailContent");
+            const emailMeta = document.getElementById("emailMeta");
+            const previewRecipient = document.getElementById("previewRecipient");
+            const previewSubject = document.getElementById("previewSubject");
+            const status = document.getElementById("status");
+            generateBtn.addEventListener("click", generateEmail);
+            function generateEmail() {
+                const recipientValue = recipient.value.trim();
+                const subjectValue = subject.value.trim();
+                const messageValue = message.value.trim();
+                const instructionValue = instructions.value.trim();
+                if (!messageValue) {
+                    message.focus();
+                    message.style.borderColor = "#e05252";
+                    setTimeout(() => {
+                        message.style.borderColor = "";
+                    }, 1500);
+                    return;
+                }
+                emptyState.style.display = "none";
+                emailContent.style.display = "none";
+                emailMeta.style.display = "none";
+                loading.classList.add("show");
+                generateBtn.classList.add("loading");
+                generateBtn.textContent = "Generating...";
+                setTimeout(() => {
+                    let greeting = recipientValue ? `Dear ${recipientValue},`: "Dear Hiring Manager,";
+                    if (tone.value === "Friendly" || tone.value === "Casual") {
+                        greeting = recipientValue ? `Hi ${recipientValue},` : "Hi there,";
+                    }
+                    let body = "";
+                    if (selectedPurpose === "Job Application") {
+                        body = `${greeting}
+                        I am writing to express my interest in the opportunity mentioned. ${messageValue}
+                        I believe my skills and experience would allow me to contribute effectively while also giving me an opportunity to learn and grow.
+                        I would appreciate the opportunity to discuss this further and provide any additional information you may require.
+                        Thank you for your time and consideration.
+                        Best regards,
+                        Jyoti`;
+                    } else if (selectedPurpose === "Follow-up") {
+                        body =`${greeting}
+                        I am writing to follow up regarding ${messageValue}
+                        I wanted to check if there are any updates or additional information required from my side.
+                        I look forward to hearing from you.
+                        Best regards,
+                        Jyoti`;
+                    } else if (selectedPurpose === "Thank You") {
+                        body =`${greeting}
+                        I would like to sincerely thank you for ${messageValue}
+                        I truly appreciate your time, support and consideration. It was a valuable experience and I am grateful for the opportunity.
+                        Thank you once again.
+                        Best regards,
+                        Jyoti`;
+                    } else if (selectedPurpose === "Meeting") {
+                        body =`${greeting}
+                        I would like to discuss ${messageValue}
+                        Please let me know a suitable date and time for a meeting. I will be happy to adjust according to your availability.
+                        Looking forward to your response.
+                        Best regards,
+                        Jyoti`;
+                    } else if (selectedPurpose === "Request") {
+                        body =`${greeting}
+                        I am reaching out to request your assistance regarding ${messageValue}
+                        I would be grateful if you could consider my request and let me know if any additional information is required.
+                        Thank you for your time and consideration.
+                        Best regards,
+                        Jyoti`;
+                    } else {
+                        body =`${greeting}
+                        I am writing regarding ${messageValue}
+                        I wanted to reach out and share this information with you. Please let me know if you have any questions or require any additional details.
+                        I look forward to hearing from you.
+                        Best regards,
+                        Jyoti`;
+                    }
+                    if (length.value === "Short") {
+                        body =`${greeting}
+                        ${messageValue}
+                        Best regards,
+                        Jyoti`;
+                    }
+                    if (length.value === "Detailed") {
+                        body += `I would be happy to provide any further details or clarification if needed. Please feel free to reach out at your convenience.`;
+                    }
+                    if (instructionValue) {
+                        body += `Additional note: ${instructionValue}`;
+                    }
+                    loading.classList.remove("show");
+                    emailMeta.style.display = "block";
+                    emailContent.textContent = body;
+                    emailContent.style.display = "block";
+                    previewRecipient.textContent = recipientValue || "Recipient";
+                    previewSubject.textContent = subjectValue || "Generated Email";
+                    status.textContent = `${tone.value} • ${length.value}`;
+                    generateBtn.classList.remove("loading");
+                    generateBtn.textContent = "✦ Generate Email";
+                }, 1400);
+            }
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.addEventListener("click", async () => {
+                const text = emailContent.textContent.trim();
+                if (!text) {
+                    alert("Generate an email first.");
+                    return;
+                }
+                const subjectText = subject.value.trim();
+                const fullEmail = subjectText ? `Subject: ${subjectText}\n\n${text}` : text;
+                try {
+                    await navigator.clipboard.writeText(fullEmail);
+                    copyBtn.textContent = "Copied!";
+                    setTimeout(() => {
+                        copyBtn.textContent = "Copy";
+                    }, 1500);
+                } catch (error) {
+                    alert("Unable to copy the email.");
+                }
+            });
+            const downloadBtn = document.getElementById("downloadBtn");
+            downloadBtn.addEventListener("click", () => {
+                const text = emailContent.textContent.trim();
+                if (!text) {
+                    alert("Generate an email first.");
+                    return;
+                }
+                const subjectText = subject.value.trim();
+                const finalText = subjectText ? `Subject: ${subjectText}\n\n${text}`: text;
+                const blob = new Blob([finalText], {
+                        type: "text/plain"
+                    });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "novaai-generated-email.txt";
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+            const clearBtn = document.getElementById("clearBtn");
+            clearBtn.addEventListener("click", () => {
+                recipient.value = "";
+                subject.value = "";
+                message.value = "";
+                instructions.value = "";
+                emailContent.textContent = "";
+                emailContent.style.display = "none";
+                emailMeta.style.display = "none";
+                loading.classList.remove("show");
+                emptyState.style.display = "flex";
+                status.textContent = "Your email will appear here";
+                generateBtn.classList.remove("loading");
+                generateBtn.textContent = "✦ Generate Email";
+            });
+        </script>
+    </body>
+</html>

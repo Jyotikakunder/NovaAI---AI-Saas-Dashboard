@@ -1,0 +1,1111 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Blog Generator - NovaAI</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                background: #f7f8fc;
+                color: #17172b;
+                min-height: 100vh;
+            }
+            button, input, textarea, select {
+                font-family: inherit;
+            }
+            button {
+                cursor: pointer;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: #ffffff;
+                border-right: 1px solid #e7e6ef;
+                display: flex;
+                flex-direction: column;
+                z-index: 1000;
+            }
+            .logo {
+                padding: 24px 22px;
+                font-size: 23px;
+                font-weight: 800;
+                color: #6c4df6;
+                border-bottom: 1px solid #eeeef4;
+            }
+            .logo span {
+                color: #17172b;
+            }
+            .nav {
+                padding: 20px 14px;
+                flex: 1;
+                overflow-y: auto;
+            }
+            .nav-title {
+                font-size: 11px;
+                color: #9a99a8;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin: 8px 10px 12px;
+            }
+            .nav a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 13px;
+                margin-bottom: 5px;
+                border-radius: 10px;
+                color: #68677a;
+                font-size: 14px;
+                font-weight: 600;
+                transition: 0.25s;
+            }
+            .nav a:hover {
+                background: #f2f0ff;
+                color: #6c4df6;
+            }
+            .nav a.active {
+                background: #f0edff;
+                color: #6c4df6;
+            }
+            .nav-icon {
+                width: 20px;
+                text-align: center;
+                font-size: 17px;
+            }
+            .upgrade-card {
+                margin: 15px;
+                padding: 17px;
+                border-radius: 14px;
+                background: #17172b;
+                color: white;
+            }
+            .upgrade-card h4 {
+                font-size: 14px;
+                margin-bottom: 7px;
+            }
+            .upgrade-card p {
+                font-size: 12px;
+                line-height: 1.5;
+                color: #c7c6d4;
+                margin-bottom: 13px;
+            }
+            .upgrade-card a {
+                display: block;
+                text-align: center;
+                background: #6c4df6;
+                padding: 9px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .main {
+                margin-left: 250px;
+                min-height: 100vh;
+            }
+            .topbar {
+                height: 74px;
+                background: white;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 30px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+            .topbar-left {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+            .mobile-menu {
+                display: none;
+                border: none;
+                background: #f2f0ff;
+                color: #6c4df6;
+                width: 40px;
+                height: 40px;
+                border-radius: 9px;
+                font-size: 20px;
+            }
+            .page-title h2 {
+                font-size: 19px;
+                margin-bottom: 3px;
+            }
+            .page-title p {
+                color: #8a8999;
+                font-size: 12px;
+            }
+            .topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .credits {
+                background: #f0edff;
+                color: #6c4df6;
+                padding: 8px 13px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 700;
+            }
+            .theme-btn {
+                width: 39px;
+                height: 39px;
+                border: 1px solid #e5e4ec;
+                background: white;
+                border-radius: 9px;
+                font-size: 17px;
+            }
+            .avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #6c4df6;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+            }
+            .content {
+                padding: 30px;
+                max-width: 1450px;
+                margin: auto;
+            }
+            .generator-layout {
+                display: grid;
+                grid-template-columns: 390px 1fr;
+                gap: 22px;
+                align-items: start;
+            }
+            .card {
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .card-header {
+                padding: 20px 22px;
+                border-bottom: 1px solid #e8e7ef;
+                display: flex;
+                align-items: center;
+                gap: 11px;
+            }
+            .header-icon {
+                width: 39px;
+                height: 39px;
+                border-radius: 10px;
+                background: #f0edff;
+                color: #6c4df6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .card-header h3 {
+                font-size: 15px;
+            }
+            .card-header p {
+                color: #9291a0;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+            .card-body {
+                padding: 22px;
+            }
+            .field {
+                margin-bottom: 17px;
+            }
+            .label {
+                display: block;
+                font-size: 12px;
+                font-weight: 700;
+                color: #555465;
+                margin-bottom: 8px;
+            }
+            input, textarea, select {
+                width: 100%;
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #29283d;
+                border-radius: 10px;
+                padding: 11px 13px;
+                outline: none;
+                font-size: 12px;
+                transition: 0.2s;
+            }
+            input:focus, textarea:focus, select:focus {
+                border-color: #6c4df6;
+                box-shadow: 0 0 0 3px rgba(108, 77, 246, 0.08);
+            }
+            textarea {
+                resize: vertical;
+                min-height: 105px;
+                line-height: 1.6;
+            }
+            .two-column {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .generate-btn {
+                width: 100%;
+                border: none;
+                background: #6c4df6;
+                color: white;
+                padding: 13px;
+                border-radius: 10px;
+                font-size: 13px;
+                font-weight: 700;
+                transition: 0.25s;
+            }
+            .generate-btn:hover {
+                background: #5940d8;
+                transform: translateY(-1px);
+            }
+            .generate-btn.loading {
+                opacity: 0.7;
+                pointer-events: none;
+            }
+            .credit-note {
+                text-align: center;
+                color: #9998a7;
+                font-size: 10px;
+                margin-top: 9px;
+            }
+            .keywords {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 7px;
+                margin-top: 8px;
+            }
+            .keyword {
+                border: 1px solid #dedde7;
+                background: #fafafe;
+                color: #68677a;
+                padding: 7px 10px;
+                border-radius: 20px;
+                font-size: 10px;
+                cursor: pointer;
+            }
+            .keyword:hover, .keyword.active {
+                border-color: #6c4df6;
+                background: #f0edff;
+                color: #6c4df6;
+            }
+            .preview-card {
+                min-height: 650px;
+            }
+            .preview-header {
+                padding: 17px 20px;
+                border-bottom: 1px solid #e8e7ef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .preview-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .preview-title h3 {
+                font-size: 14px;
+            }
+            .preview-title p {
+                color: #9291a0;
+                font-size: 11px;
+                margin-top: 3px;
+            }
+            .preview-actions {
+                display: flex;
+                gap: 7px;
+            }
+            .small-btn {
+                border: 1px solid #dedde7;
+                background: white;
+                color: #68677a;
+                border-radius: 8px;
+                padding: 8px 11px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            .small-btn:hover {
+                border-color: #6c4df6;
+                color: #6c4df6;
+            }
+            .blog-area {
+                padding: 22px;
+            }
+            .blog-window {
+                border: 1px solid #e2e1e9;
+                border-radius: 13px;
+                overflow: hidden;
+                background: white;
+            }
+            .blog-toolbar {
+                background: #f7f7fb;
+                padding: 12px 15px;
+                border-bottom: 1px solid #e7e6ef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .toolbar-left {
+                display: flex;
+                gap: 7px;
+            }
+            .toolbar-dot {
+                width: 9px;
+                height: 9px;
+                border-radius: 50%;
+                background: #b5b4c1;
+            }
+            .article-label {
+                font-size: 10px;
+                color: #8d8c9b;
+                font-weight: 600;
+            }
+            .blog-content {
+                padding: 28px;
+                min-height: 470px;
+            }
+            .blog-title {
+                display: none;
+                font-size: 28px;
+                line-height: 1.25;
+                color: #202033;
+                margin-bottom: 10px;
+            }
+            .blog-meta {
+                display: none;
+                color: #9695a4;
+                font-size: 11px;
+                margin-bottom: 22px;
+            }
+            .blog-text {
+                display: none;
+                color: #393849;
+                font-size: 13px;
+                line-height: 1.85;
+                white-space: pre-line;
+            }
+            .blog-text strong {
+                color: #29283d;
+            }
+            .empty-state {
+                min-height: 410px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: #9998a7;
+                padding: 30px;
+            }
+            .empty-icon {
+                width: 68px;
+                height: 68px;
+                background: #f0edff;
+                color: #6c4df6;
+                border-radius: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                margin-bottom: 16px;
+            }
+            .empty-state h3 {
+                color: #555465;
+                font-size: 15px;
+                margin-bottom: 7px;
+            }
+            .empty-state p {
+                max-width: 370px;
+                font-size: 12px;
+                line-height: 1.6;
+            }
+            .loading {
+                display: none;
+                padding: 25px;
+            }
+            .loading.show {
+                display: block;
+            }
+            .loading-line {
+                height: 11px;
+                background: #e5e4ec;
+                border-radius: 6px;
+                margin-bottom: 15px;
+                animation: pulse 1.4s infinite;
+            }
+            .loading-line:nth-child(1) {
+                width: 70%;
+                height: 18px;
+            }
+            .loading-line:nth-child(2) {
+                width: 95%;
+            }
+            .loading-line:nth-child(3) {
+                width: 88%;
+            }
+            .loading-line:nth-child(4) {
+                width: 76%;
+            }
+            .loading-line:nth-child(5) {
+                width: 92%;
+            }
+            .loading-line:nth-child(6) {
+                width: 65%;
+            }
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 0.4;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }
+            .stats {
+                display: flex;
+                gap: 9px;
+                margin-top: 14px;
+            }
+            .stat {
+                flex: 1;
+                background: #f7f6fc;
+                padding: 11px;
+                border-radius: 9px;
+            }
+            .stat span {
+                display: block;
+                color: #9998a7;
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+            .stat strong {
+                color: #38374a;
+                font-size: 13px;
+            }
+            .tips {
+                margin-top: 22px;
+                background: white;
+                border: 1px solid #e7e6ef;
+                border-radius: 16px;
+                padding: 22px;
+            }
+            .tips h3 {
+                font-size: 15px;
+                margin-bottom: 15px;
+            }
+            .tips-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .tip {
+                background: #fafafe;
+                border: 1px solid #eeeef4;
+                padding: 15px;
+                border-radius: 11px;
+            }
+            .tip-icon {
+                color: #6c4df6;
+                font-size: 18px;
+                margin-bottom: 8px;
+            }
+            .tip h4 {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            .tip p {
+                color: #8c8b9a;
+                font-size: 11px;
+                line-height: 1.6;
+            }
+            body.dark {
+                background: #10101c;
+                color: #f3f2fa;
+            }
+            body.dark .sidebar, body.dark .topbar, body.dark .card, body.dark .tips {
+                background: #181827;
+                border-color: #29293b;
+            }
+            body.dark .logo span, body.dark .page-title h2, body.dark .card-header h3, body.dark .preview-title h3, body.dark .tips h3, body.dark .blog-title {
+                color: #f3f2fa;
+            }
+            body.dark .nav a {
+                color: #aaa9b9;
+            }
+            body.dark .nav a:hover, body.dark .nav a.active {
+                background: #25243b;
+                color: #a99cff;
+            }
+            body.dark .topbar {
+                border-color: #29293b;
+            }
+            body.dark .theme-btn, body.dark input, body.dark textarea, body.dark select, body.dark .keyword, body.dark .small-btn {
+                background: #202033;
+                color: #e7e6ef;
+                border-color: #353549;
+            }
+            body.dark .label {
+                color: #c7c6d4;
+            }
+            body.dark .card-header, body.dark .preview-header {
+                border-color: #303047;
+            }
+            body.dark .blog-window {
+                background: #202033;
+                border-color: #353549;
+            }
+            body.dark .blog-toolbar {
+                background: #181827;
+                border-color: #353549;
+            }
+            body.dark .blog-text {
+                color: #dedde8;
+            }
+            body.dark .blog-text strong {
+                color: #f0eff7;
+            }
+            body.dark .empty-state h3 {
+                color: #dedde8;
+            }
+            body.dark .stat, body.dark .tip {
+                background: #202033;
+                border-color: #303047;
+            }
+            body.dark .stat strong, body.dark .tip h4 {
+                color: #e7e6ef;
+            }
+            body.dark .loading-line {
+                background: #303047;
+            }
+            .overlay {
+                display: none;
+            }
+            @media (max-width: 1050px) {
+                .generator-layout {
+                    grid-template-columns: 340px 1fr;
+                }
+                .tips-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            @media (max-width: 850px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    transition: 0.3s;
+                }
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+                .overlay.show {
+                    display: block;
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.4);
+                    z-index: 900;
+                }
+                .main {
+                    margin-left: 0;
+                }
+                .mobile-menu {
+                    display: block;
+                }
+                .generator-layout {
+                    grid-template-columns: 1fr;
+                }
+            }
+            @media (max-width: 600px) {
+                .topbar {
+                    padding: 0 15px;
+                }
+                .page-title p, .credits {
+                    display: none;
+                }
+                .avatar {
+                    display: none;
+                }
+                .content {
+                    padding: 18px 14px;
+                }
+                .card-body, .blog-area {
+                    padding: 16px;
+                }
+                .two-column {
+                    grid-template-columns: 1fr;
+                    gap: 0;
+                }
+                .preview-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+                .preview-actions {
+                    width: 100%;
+                }
+                .small-btn {
+                    flex: 1;
+                }
+                .blog-content {
+                    padding: 20px;
+                }
+                .blog-title {
+                    font-size: 23px;
+                }
+                .stats {
+                    flex-direction: column;
+                }
+                .tips {
+                    padding: 17px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="overlay" id="overlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">Nova<span>AI</span></div>
+            <nav class="nav">
+                <div class="nav-title">Workspace</div>
+                <a href="dashboard.html">
+                    <span class="nav-icon">⌂</span>Dashboard
+                </a>
+                <a href="chat.html">
+                    <span class="nav-icon">✦</span>AI Chat
+                </a>
+                <a href="image-generator.html">
+                    <span class="nav-icon">▧</span>Image Generator
+                </a>
+                <a href="code-generator.html">
+                    <span class="nav-icon">&lt;/&gt;</span>Code Generator
+                </a>
+                <a href="text-summarizer.html">
+                    <span class="nav-icon">≡</span>Text Summarizer
+                </a>
+                <a href="email-generator.html">
+                    <span class="nav-icon">✉</span>Email Generator
+                </a>
+                <a href="blog-generator.html" class="active">
+                    <span class="nav-icon">▤</span>Blog Generator
+                </a>
+                <div class="nav-title">Manage</div>
+                <a href="history.html">
+                    <span class="nav-icon">◷</span>History
+                </a>
+                <a href="profile.html">
+                    <span class="nav-icon">◎</span>Profile
+                </a>
+                <a href="settings.html">
+                    <span class="nav-icon">⚙</span>Settings
+                </a>
+                <a href="pricing.html">
+                    <span class="nav-icon">◆</span>pricing
+                </a>
+            </nav>
+            <div class="upgrade-card">
+                <h4>Upgrade to Premium</h4>
+                <p>Get more AI generations, longer articles and advanced tools.</p>
+                <a href="pricing.html">View Plans</a>
+            </div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="mobile-menu" id="menuBtn">☰</button>
+                    <div class="page-title">
+                        <h2>AI Blog Generator</h2>
+                        <p>Create engaging blog content with AI</p>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="credits">⚡ 42 Credits</div>
+                    <button class="theme-btn" id="themeBtn">☾</button>
+                    <div class="avatar">JD</div>
+                </div>
+            </header>
+            <section class="content">
+                <div class="generator-layout">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="header-icon">▤</div>
+                            <div>
+                                <h3>Create Your Blog</h3>
+                                <p>Describe the article you want to write</p>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="field">
+                                <label class="label">Blog Topic</label>
+                                <input type="text" id="topic" placeholder="e.g. Benefits of learning web development">
+                            </div>
+                            <div class="field">
+                                <label class="label">Category</label>
+                                <select id="category">
+                                    <option>Technology</option>
+                                    <option>Education</option>
+                                    <option>Business</option>
+                                    <option>Career</option>
+                                    <option>Lifestyle</option>
+                                    <option>Health & Fitness</option>
+                                    <option>Travel</option>
+                                    <option>Finance</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label class="label">Keywords</label>
+                                <input type="text" id="keywords" placeholder="e.g. HTML, CSS, career, coding">
+                                <div class="keywords">
+                                    <button class="keyword" data-keyword="AI">AI</button>
+                                    <button class="keyword" data-keyword="Web Development">Web Development</button>
+                                    <button class="keyword" data-keyword="Career">Career</button>
+                                    <button class="keyword" data-keyword="Technology">Technology</button>
+                                </div>
+                            </div>
+                            <div class="two-column">
+                                <div class="field">
+                                    <label class="label">Tone</label>
+                                    <select id="tone">
+                                        <option>Professional</option>
+                                        <option>Friendly</option>
+                                        <option>Informative</option>
+                                        <option>Casual</option>
+                                        <option>Persuasive</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Length</label>
+                                    <select id="length">
+                                        <option>Short</option>
+                                        <option selected>Medium</option>
+                                        <option>Long</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Target Audience</label>
+                                <input type="text" id="audience" placeholder="e.g. College students and beginners">
+                            </div>
+                            <div class="field">
+                                <label class="label">Additional Instructions</label>
+                                <textarea id="instructions" placeholder="e.g. Include practical examples, tips and a conclusion."></textarea>
+                            </div>
+                            <button class="generate-btn" id="generateBtn">✦ Generate Blog</button>
+                            <div class="credit-note">This generation uses 3 AI credits</div>
+                        </div>
+                    </div>
+                    <div class="card preview-card">
+                        <div class="preview-header">
+                            <div class="preview-title">
+                                <div class="header-icon">✦</div>
+                                <div>
+                                    <h3>Generated Blog</h3>
+                                    <p id="status">Your blog article will appear here</p>
+                                </div>
+                            </div>
+                            <div class="preview-actions">
+                                <button class="small-btn" id="copyBtn">Copy</button>
+                                <button class="small-btn" id="downloadBtn">Download</button>
+                                <button class="small-btn" id="clearBtn">Clear</button>
+                            </div>
+                        </div>
+                        <div class="blog-area">
+                            <div class="blog-window">
+                                <div class="blog-toolbar">
+                                    <div class="toolbar-left">
+                                        <span class="toolbar-dot"></span>
+                                        <span class="toolbar-dot"></span>
+                                        <span class="toolbar-dot"></span>
+                                    </div>
+                                    <span class="article-label">AI ARTICLE PREVIEW</span>
+                                </div>
+                                <div class="empty-state" id="emptyState">
+                                    <div class="empty-icon">▤</div>
+                                    <h3>Your blog will appear here</h3>
+                                    <p>Enter a topic, choose your preferred settings and click "Generate Blog" to create your article.</p>
+                                </div>
+                                <div class="loading" id="loading">
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                    <div class="loading-line"></div>
+                                </div>
+                                <div class="blog-content" id="blogContent" style="display:none;">
+                                    <h1 class="blog-title" id="blogTitle"></h1>
+                                    <div class="blog-meta" id="blogMeta"></div>
+                                    <div class="blog-text" id="blogText"></div>
+                                </div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat">
+                                    <span>Category</span>
+                                    <strong id="statCategory">—</strong>
+                                </div>
+                                <div class="stat">
+                                    <span>Words</span>
+                                    <strong id="statWords">0</strong>
+                                </div>
+                                <div class="stat">
+                                    <span>Tone</span>
+                                    <strong id="statTone">—</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips">
+                    <h3>Tips for Better Blog Content</h3>
+                    <div class="tips-grid">
+                        <div class="tip">
+                            <div class="tip-icon">✓</div>
+                            <h4>Choose a Clear Topic</h4>
+                            <p>Use a specific topic so the generated article can stay focused and useful.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">✦</div>
+                            <h4>Add Keywords</h4>
+                            <p>Include relevant keywords to help guide the content and make it more targeted.</p>
+                        </div>
+                        <div class="tip">
+                            <div class="tip-icon">◈</div>
+                            <h4>Define Your Audience</h4>
+                            <p>Mention who will read the article to make the content more relevant to them.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <script>
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const menuBtn = document.getElementById("menuBtn");
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("open");
+                overlay.classList.toggle("show");
+            });
+            overlay.addEventListener("click", () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("show");
+            });
+            const themeBtn = document.getElementById("themeBtn");
+            if (localStorage.getItem("novaTheme") === "dark") {
+                document.body.classList.add("dark");
+                themeBtn.textContent = "☀";
+            }
+            themeBtn.addEventListener("click", () => {
+                document.body.classList.toggle("dark");
+                if (document.body.classList.contains("dark")) {
+                    localStorage.setItem("novaTheme", "dark");
+                    themeBtn.textContent = "☀";
+                } else {
+                    localStorage.setItem("novaTheme", "light");
+                    themeBtn.textContent = "☾";
+                }
+            });
+            const keywordButtons = document.querySelectorAll(".keyword");
+            const keywordsInput = document.getElementById("keywords");
+            keywordButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    const keyword = button.dataset.keyword;
+                    button.classList.toggle("active");
+                    const current = keywordsInput.value .split(",") .map(item => item.trim()) .filter(Boolean);
+                    if (current.includes(keyword)) {
+                        const updated = current.filter(item => item !== keyword);
+                        keywordsInput.value = updated.join(", ");
+                    } else {
+                        current.push(keyword);
+                        keywordsInput.value = current.join(", ");
+                    }
+                });
+            });
+            const topic = document.getElementById("topic");
+            const category = document.getElementById("category");
+            const tone = document.getElementById("tone");
+            const length = document.getElementById("length");
+            const audience = document.getElementById("audience");
+            const instructions = document.getElementById("instructions");
+            const generateBtn = document.getElementById("generateBtn");
+            const emptyState = document.getElementById("emptyState");
+            const loading = document.getElementById("loading");
+            const blogContent = document.getElementById("blogContent");
+            const blogTitle = document.getElementById("blogTitle");
+            const blogMeta = document.getElementById("blogMeta");
+            const blogText = document.getElementById("blogText");
+            const status = document.getElementById("status");
+            const statCategory = document.getElementById("statCategory");
+            const statWords = document.getElementById("statWords");
+            const statTone = document.getElementById("statTone");
+            generateBtn.addEventListener("click", generateBlog);
+            function generateBlog() {
+                const topicValue = topic.value.trim();
+                const keywordValue = keywordsInput.value.trim();
+                const audienceValue = audience.value.trim();
+                const instructionValue = instructions.value.trim();
+                if (!topicValue) {
+                    topic.focus();
+                    topic.style.borderColor = "#e05252";
+                    setTimeout(() => {
+                        topic.style.borderColor = "";
+                    }, 1500);
+                    return;
+                }
+                emptyState.style.display = "none";
+                blogContent.style.display = "none";
+                loading.classList.add("show");
+                generateBtn.classList.add("loading");
+                generateBtn.textContent = "Generating...";
+                setTimeout(() => {
+                    let article = "";
+                    if (length.value === "Short") {
+                        article =`Introduction
+                            ${topicValue} has become an increasingly important topic in today's world. Understanding its basic concepts can help individuals make better decisions and develop useful skills.
+                            Why ${topicValue} Matters
+                            Learning about ${topicValue} can provide practical benefits and help people stay informed. It can also create new opportunities for personal and professional growth.
+                            Key Benefits
+                            One of the main benefits is that it provides useful knowledge that can be applied in real-world situations. With consistent learning and practice, beginners can gradually improve their understanding.
+                            Conclusion
+                            ${topicValue} is a valuable subject for anyone looking to learn and grow. Starting with the basics and applying the knowledge through practical examples can make the learning process easier.`;
+                    } else if (length.value === "Long") {
+                        article =`Introduction
+                            ${topicValue} is an important subject that continues to attract attention in today's rapidly changing world. As technology, education and professional opportunities continue to evolve, understanding this topic can help people make informed decisions and prepare for the future.
+                            Understanding ${topicValue}
+                            At its core, ${topicValue} involves concepts and practices that can be learned gradually. Beginners do not need to understand everything immediately. Building a strong foundation and learning through practical examples is often the most effective approach.
+                            Why It Is Important
+                            The importance of ${topicValue} comes from its practical applications. People can use the knowledge gained from this area to solve problems, improve their skills and explore new opportunities.
+                            Key Benefits
+                            There are several benefits associated with learning about ${topicValue}. It can improve problem-solving abilities, encourage continuous learning and help individuals become more confident when dealing with new challenges.
+                            Practical Tips
+                            Start by understanding the fundamental concepts. Break complex topics into smaller sections and practice each concept regularly. Working on small projects can also help transform theoretical knowledge into practical skills.
+                            Another useful approach is to follow reliable learning resources and keep track of progress. Asking questions and experimenting with different approaches can make learning more effective.
+                            Conclusion
+                            ${topicValue} offers valuable opportunities for learning and development. Whether someone is a beginner or already has some experience, taking a structured and practical approach can lead to better results.
+                            The key is to stay consistent, keep learning and apply new knowledge whenever possible.`;
+                    } else {
+                        article = `Introduction
+                            ${topicValue} has become an increasingly relevant topic in today's fast-changing world. For students, professionals and beginners, understanding this subject can provide useful knowledge and open the door to new opportunities.
+                            What Is ${topicValue}?
+                            ${topicValue} can be understood as an area of knowledge that combines useful concepts with practical applications. Instead of trying to learn everything at once, beginners can start with the basics and gradually build a stronger foundation.
+                            Why ${topicValue} Matters
+                            Understanding ${topicValue} is valuable because it can help people solve problems, improve their skills and adapt to changing requirements. It also encourages continuous learning and practical thinking.
+                            Key Benefits
+                            One major benefit is the opportunity to develop useful skills that can be applied in real-world situations. Learning about ${topicValue} can also improve confidence and help individuals explore academic or career opportunities.
+                            How to Get Started
+                            The best way to begin is by learning the fundamental concepts. Start with simple resources, practice regularly and work on small projects whenever possible.
+                            Practical experience is especially important because it helps connect theoretical knowledge with real-world situations.
+                            Tips for Better Results
+                            Set realistic learning goals and divide the topic into smaller sections. Make notes, practice regularly and review concepts that are difficult to understand.
+                            ${keywordValue ? `Important areas to explore include ${keywordValue}.` : "Exploring practical examples and real-world applications can also make learning more effective."}
+                            Who Can Benefit?
+                            ${audienceValue ? `${audienceValue} can benefit from understanding this topic because it can provide practical knowledge and help them make better decisions.` : `Students, beginners and professionals can benefit from learning about ${topicValue}.`}
+                            Conclusion
+                            ${topicValue} is a valuable area for anyone interested in learning and improving their knowledge. A consistent approach, practical experience and willingness to keep learning can make a significant difference.
+                            Whether you are just starting or already have some experience, taking small steps and applying what you learn can help you achieve better results.`;
+                    }
+                    if (instructionValue) {
+                        article += `Additional Considerations ${instructionValue}`;
+                    }
+                    loading.classList.remove("show");
+                    blogContent.style.display = "block";
+                    blogTitle.textContent = topicValue;
+                    blogMeta.textContent = `${category.value} • ${tone.value} • ${length.value} Article`;
+                    blogText.textContent = article;
+                    blogTitle.style.display = "block";
+                    blogMeta.style.display = "block";
+                    blogText.style.display = "block";
+                    status.textContent = `${category.value} • ${tone.value}`;
+                    statCategory.textContent = category.value;
+                    statTone.textContent = tone.value;
+                    statWords.textContent = article .split(/\s+/) .filter(Boolean) .length;
+                    generateBtn.classList.remove("loading");
+                    generateBtn.textContent = "✦ Generate Blog";
+                }, 1600);
+            }
+            const copyBtn = document.getElementById("copyBtn");
+            copyBtn.addEventListener("click", async () => {
+                    const title = blogTitle.textContent.trim();
+                    const text = blogText.textContent.trim();
+                    if (!text) {
+                        alert("Generate a blog first.");
+                        return;
+                    }
+                    const finalContent = `${title}\n\n${text}`;
+                    try {
+                        await navigator.clipboard.writeText(finalContent);
+                        copyBtn.textContent = "Copied!";
+                        setTimeout(() => {
+                            copyBtn.textContent = "Copy";
+                        }, 1500);
+                    } catch (error) {
+                        alert("Unable to copy the blog.");
+                    }
+                }
+            );
+            const downloadBtn = document.getElementById("downloadBtn");
+            downloadBtn.addEventListener(
+                "click", () => {
+                    const title = blogTitle.textContent.trim();
+                    const text = blogText.textContent.trim();
+                    if (!text) {
+                        alert("Generate a blog first.");
+                        return;
+                    }
+                    const finalContent = `${title}\n\n${text}`;
+                    const blob = new Blob([finalContent],
+                            {
+                                type: "text/plain"
+                            }
+                        );
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "novaai-generated-blog.txt";
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }
+            );
+            const clearBtn = document.getElementById("clearBtn");
+            clearBtn.addEventListener(
+                "click", () => {
+                    topic.value = "";
+                    keywordsInput.value = "";
+                    audience.value = "";
+                    instructions.value = "";
+                    blogTitle.textContent = "";
+                    blogMeta.textContent = "";
+                    blogText.textContent = "";
+                    blogContent.style.display = "none";
+                    loading.classList.remove("show");
+                    emptyState.style.display = "flex";
+                    status.textContent = "Your blog article will appear here";
+                    statCategory.textContent = "—";
+                    statWords.textContent = "0";
+                    statTone.textContent = "—";
+                    keywordButtons.forEach(button => {
+                        button.classList.remove("active");
+                    });
+                    generateBtn.classList.remove("loading");
+                    generateBtn.textContent = "✦ Generate Blog";
+                }
+            );
+        </script>
+    </body>
+</html>
